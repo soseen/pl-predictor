@@ -70,14 +70,16 @@ export type Fixture = {
     awayTeamScore?: number | null
   },
   isSubmited: boolean
+  isResolved: boolean
+  GameweekPredictionId: number
 }
 
-type UserPrediction = {
+export type UserPrediction = {
   id: number,
   matchId: number,
   GameweekPredictionId: number,
-  homeSideScore: number,
-  awaySideScore: number,
+  homeTeamScore: number,
+  awayTeamScore: number,
   isCorrectScore: boolean,
   isExactScore: boolean,
   isResolved: boolean
@@ -148,7 +150,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
           });
           const currentMatchesData: FixturesData = await currentMatchesResponse.json()
   
-          const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false}))
+          const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
 
           console.log(userState?.user?.id);
 
@@ -161,7 +163,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
 
             console.log(userGameweekPredictionsResponse);
             
-            if (userGameweekPredictionsResponse.data?.gameweek.matchPredictions){
+            if (userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions){
               const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions
   
               const fixturesToDispatch: Fixture[] = fixtures.map((fixture) => {
@@ -169,10 +171,12 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                 if(prediction) {
                   return {...fixture, 
                     prediction: {
-                      homeTeamScore: prediction.homeSideScore, 
-                      awayTeamScore: prediction.awaySideScore
+                      homeTeamScore: prediction.homeTeamScore, 
+                      awayTeamScore: prediction.awayTeamScore
                     },
-                    isSubmited: true
+                    isSubmited: true,
+                    isResolved: prediction.isResolved,
+                    GameweekPredictionId: prediction.GameweekPredictionId,
                   }
                 } else {
                   return fixture
@@ -212,7 +216,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
               <TeamsContext.Provider value={teamsProvider}>
                 <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
               </TeamsContext.Provider>
-                <Standings />
+                <Standings matchdayNumber={matchdayNumber}/>
         </Box>
     );
 };

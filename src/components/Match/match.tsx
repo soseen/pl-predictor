@@ -24,7 +24,7 @@ const Match: React.FC<Props> = ({fixture}) => {
     }
 
     return (
-        <Box className={fixtureToDisplay.isSubmited ? classNames(classes.row, classes.rowSubmitted) : classes.row}>
+        <Box className={fixtureToDisplay.isResolved ? classNames(classes.row, classes.rowResolved) : fixtureToDisplay.isSubmited ? classNames(classes.row, classes.rowSubmitted) : classes.row}>
             <img className={classes.crest} src={fixtureToDisplay.homeTeam.crestUrl} alt={fixtureToDisplay.homeTeam.name}></img>
             <div className={classes.teamName}>
                 <Typography variant={'body2'}>{fixture.homeTeam.name}</Typography>

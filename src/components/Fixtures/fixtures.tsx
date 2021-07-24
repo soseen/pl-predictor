@@ -30,7 +30,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
 
         const promises: Promise<any>[] = [];
 
-        const predictionsToPublish = currentFixtures.fixtures?.filter(fixture => fixture.prediction.homeTeamScore && fixture.prediction.awayTeamScore);
+        const predictionsToPublish = currentFixtures.fixtures?.filter(fixture => (fixture.prediction.homeTeamScore && fixture.prediction.awayTeamScore) && !fixture.isResolved);
 
         predictionsToPublish?.forEach(fixture => {
             promises.push(axios.post('/prediction', {...fixture, GameweekPredictionId: newGameweekResponse.data.gameweek[0].id}).catch(err => console.log(err)))
@@ -44,7 +44,8 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                   homeTeamScore: prediction.prediction.homeTeamScore, 
                   awayTeamScore: prediction.prediction.awayTeamScore
                 },
-                isSubmited: true
+                isSubmited: true,
+                isResolved: false
               }
             } else {
               return fixture

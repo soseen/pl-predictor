@@ -15,6 +15,9 @@ export default makeStyles(({ palette, breakpoints }) => ({
     rowSubmitted: {
         backgroundColor: palette.secondary.light,
     },
+    rowResolved: {
+        backgroundColor: "#39a350"
+    },
     teamName: {
         padding: "10px",
         flex: 1,

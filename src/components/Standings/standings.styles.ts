@@ -6,6 +6,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         textAlign: "left",
         flexBasis: "100%",
         display: "flex",
+        flexDirection: "column",
         marginBottom: "10px",
             
         [breakpoints.up("md")]: {
@@ -35,5 +36,16 @@ export default makeStyles(({ palette, breakpoints }) => ({
     tableHeadRow: {
         backgroundColor: palette.secondary.light,
         fontWeight: "bolder",
+    },
+    button: {
+        width: "100%",
+        marginTop: "10px",
+        padding: "10px",
+        backgroundColor: palette.secondary.dark,
+        color: "#fff",
+
+        "&:hover": {
+            backgroundColor: palette.secondary.main
+        }
     }
 }));
