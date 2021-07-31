@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import useStyles from './app-content.styles'
 import CurrentFixturesProvider, { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Actions } from '../../context/currentFixturesContext';
@@ -71,6 +71,8 @@ export type Fixture = {
   },
   isSubmited: boolean
   isResolved: boolean
+  isCorrectScore: boolean,
+  isExactScore: boolean,
   GameweekPredictionId: number
 }
 
@@ -130,7 +132,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
 
     const teamsProvider = useMemo(() => teams, [teams])
   
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
       try {
         
         const competitionResponse = await fetch('https://api.football-data.org/v2/competitions/2021/', {
@@ -151,8 +153,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
           const currentMatchesData: FixturesData = await currentMatchesResponse.json()
   
           const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
-
-          console.log(userState?.user?.id);
 
           if(userState?.user?.id) {
             const userGameweekPredictionsResponse = await axios.post('/gameweek', {
@@ -176,6 +176,8 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                     },
                     isSubmited: true,
                     isResolved: prediction.isResolved,
+                    isExactScore: prediction.isExactScore,
+                    isCorrectScore: prediction.isCorrectScore,
                     GameweekPredictionId: prediction.GameweekPredictionId,
                   }
                 } else {
@@ -187,7 +189,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
               currentFixturesDispatch({type: Actions.setFixtures, payload: fixtures});
             }
           }
-
          
           setSeasonId(fixtures[0].season.id)
 
@@ -205,18 +206,21 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
       } catch (error) {
         console.log(error)
       }
-    }
+    },[userState, currentFixturesDispatch])
   
     useEffect(() => {
-      fetchData()
-    }, [userState?.user])
+      if (userState?.user) {
+        fetchData()
+      }
+
+    }, [userState?.user, fetchData])
 
     return (
         <Box className={classes.container}>
               <TeamsContext.Provider value={teamsProvider}>
                 <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
               </TeamsContext.Provider>
-                <Standings matchdayNumber={matchdayNumber}/>
+                <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
         </Box>
     );
 };

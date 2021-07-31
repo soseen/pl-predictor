@@ -1,5 +1,4 @@
-import { makeStyles } from '@material-ui/core'
-import { relative } from 'path/posix';
+import { makeStyles } from '@material-ui/core';
 
 export default makeStyles(({ palette, breakpoints }) => ({
     row: {
@@ -15,8 +14,14 @@ export default makeStyles(({ palette, breakpoints }) => ({
     rowSubmitted: {
         backgroundColor: palette.secondary.light,
     },
-    rowResolved: {
+    rowExactScore: {
         backgroundColor: "#39a350"
+    },
+    rowCorrectScore: {
+        backgroundColor: "#3c87b5"
+    },
+    rowIncorrectScore: {
+        backgroundColor: "#c74c4c"
     },
     teamName: {
         padding: "10px",

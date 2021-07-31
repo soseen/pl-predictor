@@ -1,11 +1,11 @@
 import { AxiosResponse } from 'axios';
 import { axios } from '../../axios/axios'
-import React, { useContext, useEffect, useState } from 'react';
-import { User } from '../../context/userContext';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
 import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
 import { matchResults } from '../../data/matchResults.js';
-import { CurrentFixturesContext } from '../../context/currentFixturesContext';
+import { Actions, CurrentFixturesContext, CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Fixture, UserPrediction } from '../AppContent/app-content';
 
 interface UsersResponse extends AxiosResponse {
@@ -25,13 +25,21 @@ type Gameweek = {
 
 type Props = {
     matchdayNumber: number;
+    seasonId: number | null;
 }
 
-const Standings: React.FC<Props> = ({ matchdayNumber }) => {
+const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
 
     const classes = useStyles();
+    const user = useContext(UserContext);
     const currentFixtures = useContext(CurrentFixturesContext);
+    const dispatchFixtures = useContext(CurrentFixturesDispatchContext);
     const [players, setPlayers] = useState<User[]>([]);
+
+    const standings = useMemo(() => {
+        const playersToDisplay = players.sort((a,b) => b.points - a.points);
+        return playersToDisplay;
+    }, [players])
 
     const getPlayers = async () => {
         const usersResponse: UsersResponse = await axios.get('/users');
@@ -43,34 +51,14 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
     }, []);
 
     const updateStandings = async () => {
-        console.log(currentFixtures);
-        console.log(matchResults);
 
         let promises: Promise<any>[] = [];
 
-        const fixturesToUpdate = currentFixtures.fixtures?.filter(fixture => (fixture.prediction.homeTeamScore && fixture.prediction.awayTeamScore) && !fixture.isResolved).map((fixture) => {
-            const match = (matchResults.matches.find(match => match.id === fixture.id));
-                if (match) {
-                    return {
-                        ...fixture,
-                        score: {
-                            fullTime: {
-                                homeTeam: match.score.fullTime.homeTeam,
-                                awayTeam: match.score.fullTime.awayTeam
-                            },
-                            winner:  match.score.winner
-                        }
-                    }
-                } else {
-                    return fixture
-                }
-        })
         const gameweekPredictionsResponse = await axios.post('gameweekPredictions', { gameweek: matchdayNumber });
 
         const gameweekPredictions: Gameweek[] = gameweekPredictionsResponse.data.gameweekPredictions;
 
         gameweekPredictions.forEach((userGameweek: Gameweek) => {
-            console.log(userGameweek);
 
             let points = 0;
 
@@ -78,48 +66,71 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
             
             predictionsToResolve.forEach((prediction) => {
                 const matchResult = matchResults.matches.find(match => match.id === prediction.matchId);
-                console.log(matchResult);
+                let predictionToUpdate = {...prediction, isResolved: true};
 
                 if(matchResult) {
                     if (prediction.homeTeamScore === matchResult.score.fullTime.homeTeam && prediction.awayTeamScore === matchResult.score.fullTime.awayTeam) {
                         points += 3;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true}
                     } else 
                     if ((prediction.homeTeamScore > prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam > matchResult.score.fullTime.awayTeam)) {
                         points += 1;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
                     } else 
                     if ((prediction.homeTeamScore === prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam === matchResult.score.fullTime.awayTeam)) {
                         points += 1;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
                     } else 
                     if ((prediction.homeTeamScore < prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam < matchResult.score.fullTime.awayTeam)) {
                         points += 1;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
+                    } else {
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: false}
                     }
 
-                    console.log(points);
-                    console.log(prediction);
-                    console.log(matchResult.score.fullTime);
+                    console.log(predictionToUpdate);
+                    promises.push(axios.put('/prediction', predictionToUpdate).catch(err => console.log(err)));
+                    
                 }
             })
 
+            promises.push(axios.put('/user', {UserId: userGameweek.UserId, points}).catch(err => console.log(err)));
+
         })
 
-        // console.log(fixturesToUpdate);
-        // fixturesToUpdate?.forEach((fixture) => {
-        //     promises.push(axios.put('/prediction', fixture).catch(err => console.log(err)))
-        // })
+        try {
+            await Promise.all(promises);
+        } catch(error) {
+            console.log(error);
+        }
 
-        // try {
-        //     await Promise.all(promises)
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        const userGameweekPredictionsResponse = await axios.post('/gameweek', {
+            UserId: user?.user?.id,
+            gameweek: matchdayNumber,
+            seasonId: seasonId
+          });
 
-        // try {
-        //     const users = await axios.get('/users');
-        //     console.log(users.data.users);
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        if (userGameweekPredictionsResponse.data.gameweek[0]) {
+            const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions;
+
+            const fixturesToDispatch: Fixture[] | undefined = currentFixtures?.fixtures?.map((fixture) => {
+                const prediction = userPredictions.find(prediction => prediction.matchId === fixture.id );
+                if(prediction) {
+                  return {...fixture,
+                    isResolved: prediction.isResolved,
+                    isExactScore: prediction.isExactScore,
+                    isCorrectScore: prediction.isCorrectScore,
+                  }
+                } else {
+                  return fixture
+                }
+            })
+            if (fixturesToDispatch) { dispatchFixtures({type: Actions.setFixtures, payload: fixturesToDispatch}) }
+        }
+
+        getPlayers();
     }
+
 
     return (
         <div className={classes.container}>
@@ -138,7 +149,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {players.map((player) => (
+                            {standings.map((player) => (
                                 <TableRow key={player.id} className={classes.tableRow}>
                                     <TableCell>
                                         <Typography noWrap variant={'body1'}>

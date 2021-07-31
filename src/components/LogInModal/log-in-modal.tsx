@@ -99,7 +99,7 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
                 <label>
                 Password
                 </label>
-                <input className = {classes.input} type="text" value={credentials.password} onChange={(e) => setCredentials({...credentials, password: e.target.value})}></input>
+                <input className = {classes.input} type="password" value={credentials.password} onChange={(e) => setCredentials({...credentials, password: e.target.value})}></input>
               </div>
               <Button className={classes.button} onClick={isModalOpen.target === 'register' ? handleRegister : handleLogIn}>{isModalOpen.target === 'register' ? 'Register' : 'Log In'}</Button>
             </div>
