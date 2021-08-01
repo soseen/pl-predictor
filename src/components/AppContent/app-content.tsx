@@ -80,6 +80,8 @@ export type UserPrediction = {
   id: number,
   matchId: number,
   GameweekPredictionId: number,
+  homeTeamName: string,
+  awayTeamName: string,
   homeTeamScore: number,
   awayTeamScore: number,
   isCorrectScore: boolean,
@@ -219,8 +221,8 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         <Box className={classes.container}>
               <TeamsContext.Provider value={teamsProvider}>
                 <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
-              </TeamsContext.Provider>
                 <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+              </TeamsContext.Provider>
         </Box>
     );
 };

@@ -23,6 +23,10 @@ export default makeStyles(({ palette, breakpoints }) => ({
     rowIncorrectScore: {
         backgroundColor: "#c74c4c"
     },
+    bonusButton: {
+        backgroundColor: palette.secondary.main,
+        textTransform: "capitalize",
+    },
     teamName: {
         padding: "10px",
         flex: 1,

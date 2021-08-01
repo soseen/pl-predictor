@@ -47,5 +47,8 @@ export default makeStyles(({ palette, breakpoints }) => ({
         "&:hover": {
             backgroundColor: palette.secondary.main
         }
+    },
+    userLink: {
+        cursor: "pointer"
     }
 }));

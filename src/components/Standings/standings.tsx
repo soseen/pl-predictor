@@ -3,10 +3,11 @@ import { axios } from '../../axios/axios'
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
-import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
+import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button, Link } from '@material-ui/core'
 import { matchResults } from '../../data/matchResults.js';
 import { Actions, CurrentFixturesContext, CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Fixture, UserPrediction } from '../AppContent/app-content';
+import UserPredictionsModal from '../UserPredictionsModal/user-predictions-modal';
 
 interface UsersResponse extends AxiosResponse {
     data: {
@@ -14,7 +15,7 @@ interface UsersResponse extends AxiosResponse {
     }
 }
 
-type Gameweek = {
+export type Gameweek = {
     id: number,
     UserId: number,
     seasonId: number
@@ -35,6 +36,8 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
     const currentFixtures = useContext(CurrentFixturesContext);
     const dispatchFixtures = useContext(CurrentFixturesDispatchContext);
     const [players, setPlayers] = useState<User[]>([]);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [player, setPlayer] = useState<User | null>(null);
 
     const standings = useMemo(() => {
         const playersToDisplay = players.sort((a,b) => b.points - a.points);
@@ -131,6 +134,11 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
         getPlayers();
     }
 
+    const handleUserPredictions = (player: User) => {
+        setPlayer(player);
+        setIsOpen(true);
+    }
+
 
     return (
         <div className={classes.container}>
@@ -153,7 +161,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                                 <TableRow key={player.id} className={classes.tableRow}>
                                     <TableCell>
                                         <Typography noWrap variant={'body1'}>
-                                            {player.username}
+                                            <Link className={classes.userLink} onClick={() => handleUserPredictions(player)}>{player.username}</Link>
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="right">
@@ -168,6 +176,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                 </TableContainer>
             </div>
             <Button className={classes.button} onClick={updateStandings}>Update</Button>
+            <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} />
         </div>
     );
 };

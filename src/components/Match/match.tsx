@@ -1,10 +1,11 @@
-import { Box, Typography  } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import React, { useState, useContext } from 'react';
 import { Fixture } from '../AppContent/app-content'
 import useStyles from './match.styles';
 import { TeamsContext } from '../../context/teamsContext';
 import { Actions, CurrentFixturesContext, CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import classNames from 'classnames';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type Props = {
     fixture: Fixture
@@ -24,16 +25,8 @@ const Match: React.FC<Props> = ({fixture}) => {
     }
 
     return (
-        <Box
-            className={
-                fixtureToDisplay.isResolved ? (
-                    fixtureToDisplay.isExactScore ? classNames(classes.row, classes.rowExactScore) : 
-                    fixtureToDisplay.isCorrectScore ? classNames(classes.row, classes.rowCorrectScore) : 
-                    classNames(classes.row, classes.rowIncorrectScore)) : 
-                fixtureToDisplay.isSubmited ? 
-                    classNames(classes.row, classes.rowSubmitted) : 
-                    classes.row}
-        >
+        <Box className={classes.row}>
+            <Button className={classes.bonusButton}><FlashOnIcon /></Button>
             <img className={classes.crest} src={fixtureToDisplay.homeTeam.crestUrl} alt={fixtureToDisplay.homeTeam.name}></img>
             <div className={classes.teamName}>
                 <Typography variant={'body2'}>{fixture.homeTeam.name}</Typography>
