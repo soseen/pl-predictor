@@ -14,7 +14,7 @@ export default makeStyles(({ spacing, palette, breakpoints }) => ({
         left: 0,
         backgroundColor: "#1a1a1a",
         color: "#fff",
-        
+        zIndex: 100,
       },
     title: {
         marginBottom: 0,

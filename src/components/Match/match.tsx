@@ -30,15 +30,7 @@ const Match: React.FC<Props> = ({fixture, boostedPredictionId, setBoostedPredict
     }
 
     return (
-        <Box 
-            className={ 
-                fixture.isExactScore ? classNames(classes.rowExactScore, classes.row) : 
-                fixture.isCorrectScore ? classNames(classes.rowCorrectScore, classes.row) : 
-                fixture.isResolved ? classNames(classes.rowIncorrectScore, classes.row) : 
-                fixture.isSubmited ? classNames(classes.rowSubmitted, classes.row) :
-                classes.row
-            }
-        >
+        <Box className={fixture.isSubmited ? classNames(classes.rowSubmitted, classes.row) :classes.row}>
             <Button className={isBoostedPrediction ? classNames(classes.bonusButtonPressed, classes.bonusButton) : classes.bonusButton} onClick={() => setBoostedPredictionId(fixture.id)} title="double points boost"><FlashOnIcon /></Button>
             <img className={classes.crest} src={fixtureToDisplay.homeTeam.crestUrl} alt={fixtureToDisplay.homeTeam.name}></img>
             <div className={classes.teamName}>
