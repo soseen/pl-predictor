@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CurrentFixturesContext, CurrentFixturesDispatchContext, Actions } from '../../context/currentFixturesContext';
 import useStyles from './fixtures.styles'
 import { Button, Typography } from '@material-ui/core';
@@ -19,6 +19,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
     const currentFixtures = useContext(CurrentFixturesContext);
     const currentFixturesDispatch = useContext(CurrentFixturesDispatchContext);
     const userState = useContext(UserContext);
+    const [boostedPredictionId, setBoostedPredictionId] = useState<number | null>(null);
 
     const submitPredictions = async () => {
 
@@ -67,7 +68,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                 <Typography className={classes.tableName} variant='body1'>Upcoming Fixtures</Typography>
                 {currentFixtures.fixtures?.map((fixture) =>
                 (
-                    <Match key={fixture.id} fixture={fixture} />
+                    <Match key={fixture.id} fixture={fixture} boostedPredictionId={boostedPredictionId} setBoostedPredictionId={setBoostedPredictionId}/>
                 )
                 )}
                 <Button variant="contained" className={classes.submitButton} onClick={submitPredictions}>Submit</Button>

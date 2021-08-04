@@ -55,7 +55,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
 
     const updateStandings = async () => {
 
-        let promises: Promise<any>[] = [];
+        const promises: Promise<any>[] = [];
 
         const gameweekPredictionsResponse = await axios.post('gameweekPredictions', { gameweek: matchdayNumber });
 

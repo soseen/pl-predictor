@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Dialog, Typography, Box } from '@material-ui/core'
 import React, { useContext, useEffect, useState } from 'react'
 import { axios } from '../../axios/axios';
@@ -55,7 +56,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player }) =>
                                 <Typography className={classes.title}>{"Gameweek " + gameweek.gameweek}</Typography>
                                 <div>
                                     {gameweek.matchPredictions.map((prediction) => (
-                                        <div className={classes.row}>
+                                        <div className={classes.row} key={prediction.id}>
                                             <img className={classes.crest} src={teams.find(team => team.name === prediction.homeTeamName)?.crestUrl} alt={prediction.homeTeamName}></img>
                                             <div className={classes.teamName}>
                                                 <Typography variant="body2">{prediction.homeTeamName}</Typography>

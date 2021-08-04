@@ -1,4 +1,5 @@
-import { createContext, useReducer, Dispatch } from "react";
+/* eslint-disable @typescript-eslint/no-empty-function */
+import React, { createContext, useReducer, Dispatch } from "react";
 
 import { Fixture } from '../components/AppContent/app-content'
 

@@ -24,8 +24,21 @@ export default makeStyles(({ palette, breakpoints }) => ({
         backgroundColor: "#c74c4c"
     },
     bonusButton: {
-        backgroundColor: palette.secondary.main,
         textTransform: "capitalize",
+        marginRight: "10px",
+        backgroundColor: "#4f4f4f",
+        color: "#fff",
+        padding: "6px",
+        borderRadius: "50%",
+        boxShadow: "1px 1px 5px 1px #00000060",
+        minWidth: "0",
+
+        "&:hover": {
+            backgroundColor: palette.secondary.dark
+        }
+    },
+    bonusButtonPressed: {
+        backgroundColor: palette.secondary.main,
     },
     teamName: {
         padding: "10px",
