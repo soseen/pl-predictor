@@ -1,13 +1,15 @@
-import { Box } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import useStyles from './app-content.styles'
 import CurrentFixturesProvider, { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Actions } from '../../context/currentFixturesContext';
+import { Actions as FetchAction } from '../../context/fetchingContext';
 import { TeamsContext } from '../../context/teamsContext';
 import Fixtures from '../Fixtures/fixtures';
 import Standings from '../Standings/standings';
 import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
+import { setIsFetchingContext } from '../../context/fetchingContext';
 
 type TeamDetails = {
     id: number,
@@ -73,6 +75,7 @@ export type Fixture = {
   isResolved: boolean
   isCorrectScore: boolean,
   isExactScore: boolean,
+  isBoosted: boolean,
   GameweekPredictionId: number
 }
 
@@ -84,9 +87,11 @@ export type UserPrediction = {
   awayTeamName: string,
   homeTeamScore: number,
   awayTeamScore: number,
+  points: number,
   isCorrectScore: boolean,
   isExactScore: boolean,
-  isResolved: boolean
+  isResolved: boolean,
+  isBoosted: boolean
 }
 
 export type FixturesData = {
@@ -124,10 +129,12 @@ type Props = {
 
 
 
+
 const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const classes = useStyles();
     const currentFixturesDispatch = useContext(CurrentFixturesDispatchContext);
     const userState = useContext(UserContext);
+    const setFetching = useContext(setIsFetchingContext);
     const [matchdayNumber, setMatchdayNumber] = useState<number>(0);
     const [seasonId, setSeasonId] = useState<number | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
@@ -136,7 +143,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
   
     const fetchData = useCallback(async () => {
       try {
-        
         const competitionResponse = await fetch('https://api.football-data.org/v2/competitions/2021/', {
           headers: {
             'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
@@ -157,7 +163,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
           const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
 
           if(userState?.user?.id) {
-            const userGameweekPredictionsResponse = await axios.post('/gameweek', {
+            const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
               UserId: userState?.user?.id,
               gameweek: matchday.currentSeason.currentMatchday,
               seasonId: fixtures[0].season.id
@@ -165,8 +171,8 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
 
             console.log(userGameweekPredictionsResponse);
             
-            if (userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions){
-              const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions
+            if (userGameweekPredictionsResponse.data?.gameweek.matchPredictions){
+              const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions
   
               const fixturesToDispatch: Fixture[] = fixtures.map((fixture) => {
                 const prediction = userPredictions.find(prediction => prediction.matchId === fixture.id );
@@ -180,6 +186,8 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                     isResolved: prediction.isResolved,
                     isExactScore: prediction.isExactScore,
                     isCorrectScore: prediction.isCorrectScore,
+                    isBoosted: prediction.isBoosted,
+                    points: prediction.points,
                     GameweekPredictionId: prediction.GameweekPredictionId,
                   }
                 } else {
@@ -208,6 +216,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
       } catch (error) {
         console.log(error)
       }
+      setFetching({type: FetchAction.setIsFetching, payload: false});
     },[userState, currentFixturesDispatch])
   
     useEffect(() => {

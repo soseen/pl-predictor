@@ -14,7 +14,8 @@ type Action = {
 
 export enum Actions {
     setFixtures = "SetFixtures",
-    setPrediction = "setPrediction"
+    setPrediction = "setPrediction",
+    setBoostedPrediction = "setBoostedPrediction"
 }
 
 function fixturesReducer(state: State, action: Action): State {
@@ -25,6 +26,11 @@ function fixturesReducer(state: State, action: Action): State {
         case Actions.setPrediction: {
             return {...state, fixtures: state.fixtures?.map((fixture) => (
                 fixture.id === action.payload.id ? action.payload : fixture
+            ))}
+        }
+        case Actions.setBoostedPrediction: {
+            return {...state, fixtures: state.fixtures?.map((fixture) => (
+                fixture.id === action.payload.id ? {...fixture, isBoosted: true} : {...fixture, isBoosted: false}
             ))}
         }
         default: {

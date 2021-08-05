@@ -8,20 +8,16 @@ import classNames from 'classnames';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type Props = {
-    fixture: Fixture,
-    boostedPredictionId: number | null,
-    setBoostedPredictionId: (boostedPredictionId: number) => void
+    fixture: Fixture
 }
 
 
-const Match: React.FC<Props> = ({fixture, boostedPredictionId, setBoostedPredictionId}) => {
+const Match: React.FC<Props> = ({ fixture }) => {
 
     const classes = useStyles();
     const teams = useContext(TeamsContext);
     const dispatchFixture = useContext(CurrentFixturesDispatchContext);
-
-    const isBoostedPrediction = useMemo(() => 
-        boostedPredictionId === fixture.id ? true : false , [boostedPredictionId])
+    const fixtures = useContext(CurrentFixturesContext);
     
     const fixtureToDisplay: Fixture = {
         ...fixture, 
@@ -29,9 +25,28 @@ const Match: React.FC<Props> = ({fixture, boostedPredictionId, setBoostedPredict
         awayTeam: {...fixture.awayTeam, crestUrl: teams.find(t => t.id === fixture.awayTeam.id)?.crestUrl}
     }
 
+    const handleBoostScoreClick = () => {
+        const isBoostUsedAlready = !!fixtures?.fixtures?.find(fixture => (fixture.isBoosted && fixture.isSubmited));
+        if(!isBoostUsedAlready && !fixture.isSubmited) {
+            dispatchFixture(
+                {
+                    type: Actions.setBoostedPrediction,
+                    payload: {
+                        id: fixture.id
+                    }
+                }
+            )
+        }
+    }
+
     return (
         <Box className={fixture.isSubmited ? classNames(classes.rowSubmitted, classes.row) :classes.row}>
-            <Button className={isBoostedPrediction ? classNames(classes.bonusButtonPressed, classes.bonusButton) : classes.bonusButton} onClick={() => setBoostedPredictionId(fixture.id)} title="double points boost"><FlashOnIcon /></Button>
+            <Button 
+                className={fixture.isBoosted? classNames(classes.bonusButtonPressed, classes.bonusButton) : classes.bonusButton} 
+                onClick={handleBoostScoreClick} 
+                title="double points boost">
+                    <FlashOnIcon />
+            </Button>
             <img className={classes.crest} src={fixtureToDisplay.homeTeam.crestUrl} alt={fixtureToDisplay.homeTeam.name}></img>
             <div className={classes.teamName}>
                 <Typography variant={'body2'}>{fixture.homeTeam.name}</Typography>

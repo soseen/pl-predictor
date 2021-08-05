@@ -50,7 +50,11 @@ export default makeStyles(({ palette, breakpoints }) => ({
         position: 'relative',
         borderRadius: "2px",
         borderBottom: `1px solid #e0e0e0`,
-        boxSizing: "border-box"
+        boxSizing: "border-box",
+    },
+    rowBoosted: {
+        backgroundColor: palette.secondary.dark,
+        borderBottom: `1px solid ${palette.secondary.main}`,
     },
     teamName: {
         padding: "10px",

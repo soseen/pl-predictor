@@ -57,7 +57,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
 
         const promises: Promise<any>[] = [];
 
-        const gameweekPredictionsResponse = await axios.post('gameweekPredictions', { gameweek: matchdayNumber });
+        const gameweekPredictionsResponse = await axios.post('gameweekPredictions', { gameweek: 3 });
 
         const gameweekPredictions: Gameweek[] = gameweekPredictionsResponse.data.gameweekPredictions;
 
@@ -69,26 +69,27 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
             
             predictionsToResolve.forEach((prediction) => {
                 const matchResult = matchResults.matches.find(match => match.id === prediction.matchId);
+                const amplifierValue = prediction.isBoosted ? 1 : 0;
                 let predictionToUpdate = {...prediction, isResolved: true};
 
                 if(matchResult) {
                     if (prediction.homeTeamScore === matchResult.score.fullTime.homeTeam && prediction.awayTeamScore === matchResult.score.fullTime.awayTeam) {
-                        points += 3;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true}
+                        points += 3 + 3 * amplifierValue;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true, points: 3 + 3 * amplifierValue}
                     } else 
                     if ((prediction.homeTeamScore > prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam > matchResult.score.fullTime.awayTeam)) {
-                        points += 1;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
+                        points += 1 + 1 * amplifierValue;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
                     } else 
                     if ((prediction.homeTeamScore === prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam === matchResult.score.fullTime.awayTeam)) {
-                        points += 1;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
+                        points += 1 + 1 * amplifierValue;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
                     } else 
                     if ((prediction.homeTeamScore < prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam < matchResult.score.fullTime.awayTeam)) {
-                        points += 1;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true}
+                        points += 1 + 1 * amplifierValue;
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
                     } else {
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: false}
+                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: false, points: 0}
                     }
 
                     console.log(predictionToUpdate);
@@ -107,17 +108,17 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
             console.log(error);
         }
 
-        const userGameweekPredictionsResponse = await axios.post('/gameweek', {
+        const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
             UserId: user?.user?.id,
             gameweek: matchdayNumber,
             seasonId: seasonId
           });
 
-        if (userGameweekPredictionsResponse.data.gameweek[0]) {
-            const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek[0].matchPredictions;
+        if (userGameweekPredictionsResponse.data.gameweek) {
+            const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions;
 
             const fixturesToDispatch: Fixture[] | undefined = currentFixtures?.fixtures?.map((fixture) => {
-                const prediction = userPredictions.find(prediction => prediction.matchId === fixture.id );
+                const prediction = userPredictions?.find(prediction => prediction.matchId === fixture.id );
                 if(prediction) {
                   return {...fixture,
                     isResolved: prediction.isResolved,
@@ -135,8 +136,10 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
     }
 
     const handleUserPredictions = (player: User) => {
-        setPlayer(player);
-        setIsOpen(true);
+        if (user?.user) {
+            setPlayer(player);
+            setIsOpen(true);
+        }
     }
 
 

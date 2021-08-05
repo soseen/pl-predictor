@@ -48,14 +48,14 @@ export default makeStyles(({ palette, breakpoints }) => ({
         marginTop: "10px"
     },
     submitButton: {
-        margin: "10px auto",
-        backgroundColor: palette.secondary.main,
+        marginTop: "10px",
+        backgroundColor: palette.secondary.dark,
         width: "100%",
         color: "#fff",
         padding: "10px",
 
         "&:hover": {
-            color: "#000"
-        }
+            backgroundColor: palette.secondary.main
+        },
     }
 }));

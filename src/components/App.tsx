@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Header from './Header/header';
 import AppContent from './AppContent/app-content';
 import LogInModal from './LogInModal/log-in-modal';
 import './app.scss';
+import FetchingProvider from '../context/fetchingContext';
 import { createMuiTheme, ThemeProvider, } from '@material-ui/core/styles';
-import UserProvider, { User } from '../context/userContext';
+import UserProvider from '../context/userContext';
 import CurrentFixturesProvider from '../context/currentFixturesContext';
 
 
@@ -31,6 +32,7 @@ const theme = createMuiTheme({
   }
 });
 
+
 const App: React.FC = () => {
 
 const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, target: string}>({isOpen: false, target: 'log-in'})
@@ -38,14 +40,15 @@ const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, target: string}
   return (
     <div className='app'>
       <ThemeProvider theme={theme}>
-        <UserProvider >
-          <CurrentFixturesProvider>
-            <LogInModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
-            <Header setIsModalOpen={setIsModalOpen}/>
-            <AppContent setIsModalOpen={setIsModalOpen}/>
-          </CurrentFixturesProvider>
-        </UserProvider>
-      
+        <FetchingProvider>
+          <UserProvider >
+            <CurrentFixturesProvider>
+              <LogInModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
+              <Header setIsModalOpen={setIsModalOpen}/>
+              <AppContent setIsModalOpen={setIsModalOpen}/>
+            </CurrentFixturesProvider>
+          </UserProvider>
+        </FetchingProvider>
       </ThemeProvider>
       
     </div>
