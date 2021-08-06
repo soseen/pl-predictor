@@ -15,22 +15,23 @@ type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
     player: User | null;
+    matchdayNumber?: number;
 }
 
-const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player }) => {
+const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matchdayNumber }) => {
 
     const classes = useStyles();
     const teams = useContext(TeamsContext);
     const [userPredictions, setUserPredictions] = useState<Gameweek[]>([]);
     const setFetching = useContext(setIsFetchingContext);
         
-
     const getUserPredictions = async () => {
         setFetching({type: FetchAction.setIsFetching, payload: true});
         try {
             const userPredictionsResponse = await axios.post('/userPredictions', {id: player?.id} )
             const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions;
-            if (predictions) { setUserPredictions(userPredictionsResponse.data.userPredictions) }
+            // const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions.filter((gp: Gameweek) => gp.gameweek !== matchdayNumber);
+            if (predictions) { setUserPredictions(predictions) }
         } catch (error) {
             console.log(error)
         }

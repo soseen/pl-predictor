@@ -11,6 +11,8 @@ export default makeStyles(({ palette, breakpoints }) => ({
             
         [breakpoints.up("md")]: {
             flexBasis: "28%",
+            flexGrow: 1,
+            marginLeft: "10px"
         },
     },
     tableContainer: {
@@ -32,6 +34,11 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     tableRow: {
         backgroundColor: "#fff",
+        cursor: "pointer",
+
+        "&:hover": {
+            backgroundColor: "#e0e0e0"
+        }
     },
     tableHeadRow: {
         backgroundColor: palette.secondary.light,

@@ -1,8 +1,9 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import useStyles from './app-content.styles'
 import CurrentFixturesProvider, { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Actions } from '../../context/currentFixturesContext';
+import { format } from "date-fns";
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import { TeamsContext } from '../../context/teamsContext';
 import Fixtures from '../Fixtures/fixtures';
@@ -10,6 +11,7 @@ import Standings from '../Standings/standings';
 import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
 import { setIsFetchingContext } from '../../context/fetchingContext';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type TeamDetails = {
     id: number,
@@ -138,12 +140,16 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const [matchdayNumber, setMatchdayNumber] = useState<number>(0);
     const [seasonId, setSeasonId] = useState<number | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     const teamsProvider = useMemo(() => teams, [teams])
   
     const fetchData = useCallback(async () => {
       try {
-        const competitionResponse = await fetch('https://api.football-data.org/v2/competitions/2021/', {
+        setError(null);
+        const currentYear = format(new Date(), "yyyy");
+
+        const competitionResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/`, {
           headers: {
             'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
           },
@@ -152,26 +158,25 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         const matchday: CompetitionData = await competitionResponse.json()
         setMatchdayNumber(matchday.currentSeason.currentMatchday)
   
-        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?matchday=${matchday.currentSeason.currentMatchday}`, {
+        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/matches?matchday=${matchday.currentSeason.currentMatchday}&status=SCHEDULED`, {
             headers: {
               'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
             },
             mode: 'cors'
-          });
-          const currentMatchesData: FixturesData = await currentMatchesResponse.json()
-  
-          const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
+        });
+        const currentMatchesData: FixturesData = await currentMatchesResponse.json()
 
-          if(userState?.user?.id) {
-            const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
-              UserId: userState?.user?.id,
-              gameweek: matchday.currentSeason.currentMatchday,
-              seasonId: fixtures[0].season.id
+          if (currentMatchesData.matches) {
+            const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
+
+            if(userState?.user?.id) {
+              const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
+                UserId: userState?.user?.id,
+                gameweek: matchday.currentSeason.currentMatchday,
+                seasonId: fixtures[0].season.id
             });
-
-            console.log(userGameweekPredictionsResponse);
             
-            if (userGameweekPredictionsResponse.data?.gameweek.matchPredictions){
+            if (userGameweekPredictionsResponse.data?.gameweek?.matchPredictions.length > 0){
               const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions
   
               const fixturesToDispatch: Fixture[] = fixtures.map((fixture) => {
@@ -194,27 +199,29 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                   return fixture
                 }
               })
-              currentFixturesDispatch({type: Actions.setFixtures, payload: fixturesToDispatch});
-            } else {
-              currentFixturesDispatch({type: Actions.setFixtures, payload: fixtures});
+                currentFixturesDispatch({type: Actions.setFixtures, payload: fixturesToDispatch});
+              } else {
+                currentFixturesDispatch({type: Actions.setFixtures, payload: fixtures});
+              }
             }
+           
+            setSeasonId(fixtures[0].season.id)
+  
+  
+            const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/teams`, {
+              headers: {
+                'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
+              },
+              mode: 'cors'
+            });
+            const teamsData: TeamsData = await teamsResponse.json()
+            const { teams } = teamsData;
+            setTeams(teams);
+  
           }
-         
-          setSeasonId(fixtures[0].season.id)
-
-
-          const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
-            headers: {
-              'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
-            },
-            mode: 'cors'
-          });
-          const teamsData: TeamsData = await teamsResponse.json()
-          const { teams } = teamsData;
-          setTeams(teams);
-
       } catch (error) {
         console.log(error)
+        setError("Error. Try again in a minute...");
       }
       setFetching({type: FetchAction.setIsFetching, payload: false});
     },[userState, currentFixturesDispatch])
@@ -228,10 +235,30 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
 
     return (
         <Box className={classes.container}>
-              <TeamsContext.Provider value={teamsProvider}>
-                <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
-                <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+              {error ?
+                <Typography variant="h5">{error}</Typography>
+                :
+                <TeamsContext.Provider value={teamsProvider}>
+                <Box className={classes.mainContent}>
+                  <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+                  <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+                </Box>
+                <Box className={classes.rulesContainer}>
+                  <Typography className={classes.rulesTitle} variant="h6">Zasady</Typography>
+                    <ul className={classes.rulesList}>
+                      <li className={classes.rule}>
+                        <Typography >Wytypowanie dokładnego wyniku meczu - <span className={classes.accent}>3</span> pkt</Typography>
+                      </li>
+                      <li className={classes.rule}>
+                        <Typography >Wytypowanie zwycięzcy (remisu) - <span className={classes.accent}> 1</span> pkt</Typography>
+                      </li>
+                      <li className={classes.rule}>
+                        <Typography className={classes.ruleText}>Boost <span className={classes.accent}><FlashOnIcon /></span> jest do wykorzystania w każdej kolejce i podwaja zdobyte punkty za dany typ.</Typography>
+                      </li>
+                    </ul>
+                </Box>
               </TeamsContext.Provider>
+              }           
         </Box>
     );
 };

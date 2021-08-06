@@ -1,13 +1,15 @@
 import { AxiosResponse } from 'axios';
 import { axios } from '../../axios/axios'
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { format } from "date-fns"
 import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
 import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button, Link } from '@material-ui/core'
 import { matchResults } from '../../data/matchResults.js';
-import { Actions, CurrentFixturesContext, CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
-import { Fixture, UserPrediction } from '../AppContent/app-content';
+import { Actions as FetchAction } from '../../context/fetchingContext';
+import { Fixture, FixturesData, UserPrediction } from '../AppContent/app-content';
 import UserPredictionsModal from '../UserPredictionsModal/user-predictions-modal';
+import { isFetchingContext, setIsFetchingContext } from '../../context/fetchingContext';
 
 interface UsersResponse extends AxiosResponse {
     data: {
@@ -33,8 +35,8 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
 
     const classes = useStyles();
     const user = useContext(UserContext);
-    const currentFixtures = useContext(CurrentFixturesContext);
-    const dispatchFixtures = useContext(CurrentFixturesDispatchContext);
+    const isFetching = useContext(isFetchingContext);
+    const setFetching = useContext(setIsFetchingContext);
     const [players, setPlayers] = useState<User[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [player, setPlayer] = useState<User | null>(null);
@@ -54,85 +56,77 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
     }, []);
 
     const updateStandings = async () => {
+        if (!isFetching) {
+            try {
+                setFetching({type: FetchAction.setIsFetching, payload: true})
 
-        const promises: Promise<any>[] = [];
-
-        const gameweekPredictionsResponse = await axios.post('gameweekPredictions', { gameweek: 3 });
-
-        const gameweekPredictions: Gameweek[] = gameweekPredictionsResponse.data.gameweekPredictions;
-
-        gameweekPredictions.forEach((userGameweek: Gameweek) => {
-
-            let points = 0;
-
-            const predictionsToResolve = userGameweek.matchPredictions.filter(prediction => !prediction.isResolved);
+                const currentDate = format(new Date(), 'yyyy-MM-dd');
+                const currentYear = format(new Date(), "yyyy");
+                const matchResultsResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/matches?dateFrom=2021-08-01&dateTo=${currentDate}&status=FINISHED`, {
+                    headers: {
+                      'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
+                    },
+                    mode: 'cors'
+                });
+        
+        
+                const matchResults: FixturesData = await matchResultsResponse.json()
+        
+                const promises: Promise<any>[] = [];
+        
+                const gameweekPredictionsResponse = await axios.get('gameweekPredictions');
+                const gameweekPredictions: Gameweek[] = gameweekPredictionsResponse.data.gameweekPredictions;
+        
+                gameweekPredictions?.forEach((userGameweek: Gameweek) => {
+        
+                    let points = 0;
+        
+                    const predictionsToResolve = userGameweek.matchPredictions.filter(prediction => !prediction.isResolved);
+        
+                    if(predictionsToResolve?.length > 0) {
+                        predictionsToResolve.forEach((prediction) => {
+                            const matchResult = matchResults.matches?.find(match => match.id === prediction.matchId);
+                            console.log(matchResult);
+                            const amplifierValue = prediction.isBoosted ? 1 : 0;
+                            let predictionToUpdate = {...prediction, isResolved: true};
             
-            predictionsToResolve.forEach((prediction) => {
-                const matchResult = matchResults.matches.find(match => match.id === prediction.matchId);
-                const amplifierValue = prediction.isBoosted ? 1 : 0;
-                let predictionToUpdate = {...prediction, isResolved: true};
-
-                if(matchResult) {
-                    if (prediction.homeTeamScore === matchResult.score.fullTime.homeTeam && prediction.awayTeamScore === matchResult.score.fullTime.awayTeam) {
-                        points += 3 + 3 * amplifierValue;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true, points: 3 + 3 * amplifierValue}
-                    } else 
-                    if ((prediction.homeTeamScore > prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam > matchResult.score.fullTime.awayTeam)) {
-                        points += 1 + 1 * amplifierValue;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
-                    } else 
-                    if ((prediction.homeTeamScore === prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam === matchResult.score.fullTime.awayTeam)) {
-                        points += 1 + 1 * amplifierValue;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
-                    } else 
-                    if ((prediction.homeTeamScore < prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam < matchResult.score.fullTime.awayTeam)) {
-                        points += 1 + 1 * amplifierValue;
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
-                    } else {
-                        predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: false, points: 0}
-                    }
-
-                    console.log(predictionToUpdate);
-                    promises.push(axios.put('/prediction', predictionToUpdate).catch(err => console.log(err)));
-                    
-                }
-            })
-
-            promises.push(axios.put('/user', {UserId: userGameweek.UserId, points}).catch(err => console.log(err)));
-
-        })
-
-        try {
-            await Promise.all(promises);
-        } catch(error) {
-            console.log(error);
-        }
-
-        const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
-            UserId: user?.user?.id,
-            gameweek: matchdayNumber,
-            seasonId: seasonId
-          });
-
-        if (userGameweekPredictionsResponse.data.gameweek) {
-            const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions;
-
-            const fixturesToDispatch: Fixture[] | undefined = currentFixtures?.fixtures?.map((fixture) => {
-                const prediction = userPredictions?.find(prediction => prediction.matchId === fixture.id );
-                if(prediction) {
-                  return {...fixture,
-                    isResolved: prediction.isResolved,
-                    isExactScore: prediction.isExactScore,
-                    isCorrectScore: prediction.isCorrectScore,
-                  }
-                } else {
-                  return fixture
-                }
-            })
-            if (fixturesToDispatch) { dispatchFixtures({type: Actions.setFixtures, payload: fixturesToDispatch}) }
-        }
-
-        getPlayers();
+                            if(matchResult && matchResult.score.fullTime.homeTeam && matchResult.score.fullTime.awayTeam) {
+                                if (prediction.homeTeamScore === matchResult.score.fullTime.homeTeam && prediction.awayTeamScore === matchResult.score.fullTime.awayTeam) {
+                                    points += 3 + 3 * amplifierValue;
+                                    predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true, points: 3 + 3 * amplifierValue}
+                                } else 
+                                if ((prediction.homeTeamScore > prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam > matchResult.score.fullTime.awayTeam)) {
+                                    points += 1 + 1 * amplifierValue;
+                                    predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
+                                } else 
+                                if ((prediction.homeTeamScore === prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam === matchResult.score.fullTime.awayTeam)) {
+                                    points += 1 + 1 * amplifierValue;
+                                    predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
+                                } else 
+                                if ((prediction.homeTeamScore < prediction.awayTeamScore) && (matchResult.score.fullTime.homeTeam < matchResult.score.fullTime.awayTeam)) {
+                                    points += 1 + 1 * amplifierValue;
+                                    predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: true, points: 1 + 1 * amplifierValue}
+                                } else {
+                                    predictionToUpdate = {...predictionToUpdate, isExactScore: false, isCorrectScore: false, points: 0}
+                                }
+                                promises.push(axios.put('/prediction', predictionToUpdate).catch(err => console.log(err)));
+                                
+                            }
+                        })
+                        promises.push(axios.put('/user', {UserId: userGameweek.UserId, points}).catch(err => console.log(err)));
+                    }   
+        
+                })
+    
+                await Promise.all(promises);
+                setFetching({type: FetchAction.setIsFetching, payload: false})
+            } catch (error) {
+                console.log(error)
+                setFetching({type: FetchAction.setIsFetching, payload: false})
+            }
+    
+            getPlayers();
+        } 
     }
 
     const handleUserPredictions = (player: User) => {
@@ -161,10 +155,10 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                         </TableHead>
                         <TableBody>
                             {standings.map((player) => (
-                                <TableRow key={player.id} className={classes.tableRow}>
+                                <TableRow key={player.id} className={classes.tableRow} onClick={() => handleUserPredictions(player)} tabIndex={0} role="button">
                                     <TableCell>
                                         <Typography noWrap variant={'body1'}>
-                                            <Link className={classes.userLink} onClick={() => handleUserPredictions(player)}>{player.username}</Link>
+                                            {player.username}
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="right">
@@ -179,7 +173,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                 </TableContainer>
             </div>
             <Button className={classes.button} onClick={updateStandings}>Update</Button>
-            <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} />
+            <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} matchdayNumber={matchdayNumber} />
         </div>
     );
 };

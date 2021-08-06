@@ -42,8 +42,6 @@ function fixturesReducer(state: State, action: Action): State {
 export const CurrentFixturesContext = createContext<State>({} as State);
 export const CurrentFixturesDispatchContext = createContext<Dispatch<Action>>(() => {})
 
-console.log(CurrentFixturesContext);
-
 const CurrentFixturesProvider: React.FC = ({ children }) => {
     const [state, dispatch] = useReducer(fixturesReducer, {});
 

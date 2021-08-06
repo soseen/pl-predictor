@@ -26,7 +26,6 @@ export const setIsFetchingContext = createContext<Dispatch<Action>>(() => null);
 
 const FetchingProvider: React.FC = ({ children }) => {
     const [state, dispatch] = useReducer(fetchingReducer, false);
-    console.log(state);
 
     return(
         <isFetchingContext.Provider value={state}>
