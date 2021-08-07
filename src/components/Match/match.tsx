@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from '@material-ui/core';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { Fixture } from '../AppContent/app-content'
 import useStyles from './match.styles';
 import { TeamsContext } from '../../context/teamsContext';

@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AxiosResponse } from 'axios';
 import { axios } from '../../axios/axios'
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { format } from "date-fns"
 import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
-import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button, Link } from '@material-ui/core'
-import { matchResults } from '../../data/matchResults.js';
+import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
+// import { matchResults as mockResults} from '../../data/matchResults.js';
 import { Actions as FetchAction } from '../../context/fetchingContext';
-import { Fixture, FixturesData, UserPrediction } from '../AppContent/app-content';
+import { FixturesData, UserPrediction } from '../AppContent/app-content';
 import UserPredictionsModal from '../UserPredictionsModal/user-predictions-modal';
 import { isFetchingContext, setIsFetchingContext } from '../../context/fetchingContext';
+import { PlayerActions, PlayersContext, PlayersDispatchContext } from '../../context/playersContext';
 
-interface UsersResponse extends AxiosResponse {
+export interface UsersResponse extends AxiosResponse {
     data: {
         users: User[]
     }
@@ -31,13 +33,15 @@ type Props = {
     seasonId: number | null;
 }
 
-const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
+const Standings: React.FC<Props> = ({ matchdayNumber }) => {
 
     const classes = useStyles();
     const user = useContext(UserContext);
     const isFetching = useContext(isFetchingContext);
     const setFetching = useContext(setIsFetchingContext);
-    const [players, setPlayers] = useState<User[]>([]);
+    const players = useContext(PlayersContext);
+    const dispatchPlayers = useContext(PlayersDispatchContext);
+    // const [players, setPlayers] = useState<User[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [player, setPlayer] = useState<User | null>(null);
 
@@ -48,7 +52,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
 
     const getPlayers = async () => {
         const usersResponse: UsersResponse = await axios.get('/users');
-        setPlayers(usersResponse.data.users)
+        dispatchPlayers({type: PlayerActions.setUser, payload: usersResponse.data.users});
     } 
 
     useEffect(() => {
@@ -61,8 +65,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                 setFetching({type: FetchAction.setIsFetching, payload: true})
 
                 const currentDate = format(new Date(), 'yyyy-MM-dd');
-                const currentYear = format(new Date(), "yyyy");
-                const matchResultsResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/matches?dateFrom=2021-08-01&dateTo=${currentDate}&status=FINISHED`, {
+                const matchResultsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?dateFrom=2021-08-01&dateTo=${currentDate}&status=FINISHED`, {
                     headers: {
                       'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
                     },
@@ -86,11 +89,10 @@ const Standings: React.FC<Props> = ({ matchdayNumber, seasonId }) => {
                     if(predictionsToResolve?.length > 0) {
                         predictionsToResolve.forEach((prediction) => {
                             const matchResult = matchResults.matches?.find(match => match.id === prediction.matchId);
-                            console.log(matchResult);
                             const amplifierValue = prediction.isBoosted ? 1 : 0;
                             let predictionToUpdate = {...prediction, isResolved: true};
             
-                            if(matchResult && matchResult.score.fullTime.homeTeam && matchResult.score.fullTime.awayTeam) {
+                            if(matchResult && (matchResult?.score.fullTime.homeTeam !== null && matchResult?.score.fullTime.homeTeam !== undefined) && (matchResult?.score.fullTime.awayTeam !== null && matchResult?.score.fullTime.awayTeam !== undefined)) {
                                 if (prediction.homeTeamScore === matchResult.score.fullTime.homeTeam && prediction.awayTeamScore === matchResult.score.fullTime.awayTeam) {
                                     points += 3 + 3 * amplifierValue;
                                     predictionToUpdate = {...predictionToUpdate, isExactScore: true, isCorrectScore: true, points: 3 + 3 * amplifierValue}

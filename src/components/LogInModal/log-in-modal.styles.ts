@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 
-export default makeStyles(({ palette, breakpoints }) => ({
+export default makeStyles(({ palette }) => ({
     modal: {
         width: "400px",
         position: 'absolute',

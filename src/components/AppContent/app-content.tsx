@@ -1,9 +1,8 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import useStyles from './app-content.styles'
-import CurrentFixturesProvider, { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
+import { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Actions } from '../../context/currentFixturesContext';
-import { format } from "date-fns";
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import { TeamsContext } from '../../context/teamsContext';
 import Fixtures from '../Fixtures/fixtures';
@@ -12,17 +11,6 @@ import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
 import { setIsFetchingContext } from '../../context/fetchingContext';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
-
-type TeamDetails = {
-    id: number,
-    name: string,
-    score?: number | null
-  }
-  
-type MatchdayDetails = {
-  homeTeam: TeamDetails,
-  awayTeam: TeamDetails
-}
 
 type CompetitionData = {
   id: number,
@@ -147,18 +135,19 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const fetchData = useCallback(async () => {
       try {
         setError(null);
-        const currentYear = format(new Date(), "yyyy");
 
-        const competitionResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/`, {
+        const competitionResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/`, {
           headers: {
             'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
           },
           mode: 'cors'
         });
+
         const matchday: CompetitionData = await competitionResponse.json()
+        console.log(matchday);
         setMatchdayNumber(matchday.currentSeason.currentMatchday)
   
-        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/matches?matchday=${matchday.currentSeason.currentMatchday}&status=SCHEDULED`, {
+        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?matchday=${matchday.currentSeason.currentMatchday}&status=SCHEDULED`, {
             headers: {
               'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
             },
@@ -208,7 +197,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
             setSeasonId(fixtures[0].season.id)
   
   
-            const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/${currentYear}/teams`, {
+            const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
               headers: {
                 'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
               },
@@ -236,7 +225,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     return (
         <Box className={classes.container}>
               {error ?
-                <Typography variant="h5">{error}</Typography>
+                <Typography variant="h5" className={classes.error}>{error}</Typography>
                 :
                 <TeamsContext.Provider value={teamsProvider}>
                 <Box className={classes.mainContent}>
@@ -247,13 +236,13 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                   <Typography className={classes.rulesTitle} variant="h6">Zasady</Typography>
                     <ul className={classes.rulesList}>
                       <li className={classes.rule}>
-                        <Typography >Wytypowanie dokładnego wyniku meczu - <span className={classes.accent}>3</span> pkt</Typography>
+                        <Typography >Wytypowanie dokładnego wyniku meczu - <span className={classes.accentGreen}>3 pkt</span></Typography>
                       </li>
                       <li className={classes.rule}>
-                        <Typography >Wytypowanie zwycięzcy (remisu) - <span className={classes.accent}> 1</span> pkt</Typography>
+                        <Typography >Wytypowanie zwycięzcy (remisu) - <span className={classes.accentBlue}>1 pkt</span></Typography>
                       </li>
                       <li className={classes.rule}>
-                        <Typography className={classes.ruleText}>Boost <span className={classes.accent}><FlashOnIcon /></span> jest do wykorzystania w każdej kolejce i podwaja zdobyte punkty za dany typ.</Typography>
+                        <Typography className={classes.ruleText}>Boost <span className={classes.accent}><FlashOnIcon /></span> jest do wykorzystania w każdej kolejce i podwaja zdobyte punkty za dany typ</Typography>
                       </li>
                     </ul>
                 </Box>

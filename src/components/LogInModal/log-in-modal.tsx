@@ -3,7 +3,11 @@ import { Button, Modal, Typography } from '@material-ui/core';
 import useStyles from './log-in-modal.styles';
 import { axios } from '../../axios/axios'
 import { Actions, User, UserDispatchContext } from '../../context/userContext';
+import { Actions as FetchingAction} from '../../context/fetchingContext';
 import { AxiosResponse } from 'axios';
+import { PlayerActions, PlayersDispatchContext } from '../../context/playersContext';
+import { UsersResponse } from '../Standings/standings';
+import { isFetchingContext, setIsFetchingContext } from '../../context/fetchingContext';
 
 type Props = {
     isModalOpen: {isOpen: boolean, target: string},
@@ -24,6 +28,9 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
   const [credentials, setCredentials] = useState<{login: string, password: string}>({login: 'sosnoski', password: 'admin123'})
   const [validationMessage, setValidationMessage] = useState<string>('')
   const dispatchUser = useContext(UserDispatchContext);
+  const dispatchPlayers = useContext(PlayersDispatchContext);
+  const isFetching = useContext(isFetchingContext);
+  const setFetching = useContext(setIsFetchingContext);
 
   const handleClose = () => {
     setIsModalOpen({...isModalOpen, isOpen: false});
@@ -44,24 +51,30 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
 
   const handleRegister = async () => {
     const isFormValid = validateForm();
-    if (isFormValid) {
+    if (isFormValid && !isFetching) {
       try {
+        setFetching({type: FetchingAction.setIsFetching, payload: true});
         const newUserResponse: UserResponse = await axios.post('/userCreate', {
           username: credentials.login,
           password: credentials.password,
           role: "User"
         })
+        const usersResponse: UsersResponse = await axios.get('/users');
+        dispatchPlayers({type: PlayerActions.setUser, payload: usersResponse.data.users});
         setValidationMessage(newUserResponse.data.message);
+        setFetching({type: FetchingAction.setIsFetching, payload: false})
       } catch (error) {
         console.log(error)
+        setFetching({type: FetchingAction.setIsFetching, payload: false})
       }
     }
   }
 
   const handleLogIn = async () => {
     const isFormValid = validateForm();
-    if (isFormValid) {
+    if (isFormValid && !isFetching) {
       try {
+        setFetching({type: FetchingAction.setIsFetching, payload: true})
         const userResponse: UserResponse = await axios.post('/user', {
           username: credentials.login,
           password: credentials.password
@@ -70,10 +83,12 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
         if (userResponse.data.user) {
           dispatchUser({type: Actions.setUser, payload: userResponse.data.user})
           handleClose();
+          setFetching({type: FetchingAction.setIsFetching, payload: false})
         }
 
       } catch (error) {
         console.log(error)
+        setFetching({type: FetchingAction.setIsFetching, payload: false})
       }
     }
   }

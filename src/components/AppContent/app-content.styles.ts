@@ -3,18 +3,29 @@ import { makeStyles } from '@material-ui/core'
 export default makeStyles(({ palette, breakpoints }) => ({
     container: {
         width: "100%",
-        marginTop: "120px",
+        marginTop: "52px",
         padding: "15px",
         boxSizing: "border-box",
-        boxShadow: "1px 1px 15px 3px #00000060",
+        boxShadow: "2px 2px 10px 5px #00000090",
         backgroundColor: "#2a2a2a",
-        minHeight: "100px",
+        minHeight: "400px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
 
         [breakpoints.up("md")]: {
             margin: '20px auto',
-            marginTop: "120px",
+            marginTop: "90px",
             maxWidth: "1200px",
         },
+    },
+    error: {
+        margin: "auto",
+        padding: "20px",
+        backgroundColor: palette.secondary.dark,
+        borderRadius: "2px",
+        boxShadow: "2px 2px 15px 5px #00000060"
     },
     mainContent: {
         width: "100%",
@@ -41,6 +52,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         listStyle: "none",
         textAlign: "left",
         marginBlockStart: "10px",
+        marginBlockEnd: 0,
         paddingInlineStart: 0
     },
     rule: {
@@ -64,7 +76,16 @@ export default makeStyles(({ palette, breakpoints }) => ({
 
     },
     accent: {
-        color: palette.secondary.main,
-        margin: "auto"
+        color: palette.secondary.main
+    },
+    accentGreen: {
+        backgroundColor: "#39a350",
+        padding: "2px",
+        borderRadius: "2px",
+    },
+    accentBlue: {
+        backgroundColor: "#3c87b5",
+        padding: "2px",
+        borderRadius: "2px",
     }
 }));

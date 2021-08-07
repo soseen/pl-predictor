@@ -8,8 +8,6 @@ import useStyles from './user-predictions-modal.styles';
 import { Gameweek } from '../Standings/standings';
 import { TeamsContext } from '../../context/teamsContext';
 import classNames from 'classnames';
-import { FormatColorResetRounded } from '@material-ui/icons';
-import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type Props = {
     isOpen: boolean;
@@ -18,11 +16,15 @@ type Props = {
     matchdayNumber?: number;
 }
 
+interface GameweekWithPoints extends Gameweek {
+    points: number
+}
+
 const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matchdayNumber }) => {
 
     const classes = useStyles();
     const teams = useContext(TeamsContext);
-    const [userPredictions, setUserPredictions] = useState<Gameweek[]>([]);
+    const [userPredictions, setUserPredictions] = useState<GameweekWithPoints[]>([]);
     const setFetching = useContext(setIsFetchingContext);
         
     const getUserPredictions = async () => {
@@ -31,7 +33,20 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
             const userPredictionsResponse = await axios.post('/userPredictions', {id: player?.id} )
             const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions;
             // const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions.filter((gp: Gameweek) => gp.gameweek !== matchdayNumber);
-            if (predictions) { setUserPredictions(predictions) }
+            if (predictions) { 
+                const gameweekData: GameweekWithPoints[] = [];
+
+                predictions.forEach((gameweek) => {
+                    const pointsAcquired: number = gameweek.matchPredictions.reduce((points: number, prediction) => {
+                        console.log(prediction);
+                        points += prediction.points
+                        return points
+                    }, 0
+                    )
+                    gameweekData.push({...gameweek, points: pointsAcquired})
+                });
+                setUserPredictions(gameweekData);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -49,13 +64,17 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
 
     return(
         <Dialog classes={{ paper: classes.dialogMain}} open={isOpen} onClose={handleClose}>
-            <Typography variant="h4" component="h2">{player?.username}</Typography>
+            <Typography variant="h4" component="h2" className={classes.username}>{player?.username}</Typography>
             <Box className={classes.userPredictions}>
                 {userPredictions.length > 0 ? 
                     <div className={classes.tableContainer}>
                         {userPredictions.map((gameweek) => (
                             <div className={classes.table} key={gameweek.id}>
-                                <Typography className={classes.title}>{"Gameweek " + gameweek.gameweek}</Typography>
+                                <div className={classes.title}>
+                                    <Typography>{"Gameweek " + gameweek.gameweek}</Typography>
+                                    <Typography className={classes.points}>{gameweek.points === 1 ? gameweek.points + " point" : gameweek.points + " points"}</Typography>
+                                </div>
+
                                 <div>
                                     {gameweek.matchPredictions.map((prediction) => (
                                         <div className={prediction.isBoosted ? classNames(classes.rowBoosted, classes.row) : classes.row} key={prediction.id}>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from 'react';
 import { CurrentFixturesContext, CurrentFixturesDispatchContext, Actions } from '../../context/currentFixturesContext';
 import { Actions as FetchAction } from '../../context/fetchingContext';
@@ -6,7 +7,6 @@ import { Button, Typography } from '@material-ui/core';
 import Match from '../Match/match';
 import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
-import { Fixture } from '../AppContent/app-content';
 import { setIsFetchingContext } from '../../context/fetchingContext';
 
 type Props = {
@@ -34,7 +34,9 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
 
             const promises: Promise<any>[] = [];
 
-            const predictionsToPublish = currentFixtures.fixtures?.filter(fixture => (fixture.prediction.homeTeamScore && fixture.prediction.awayTeamScore) && !fixture.isResolved);
+            const predictionsToPublish = currentFixtures.fixtures?.
+            filter(fixture => (fixture.prediction.homeTeamScore && fixture.prediction.awayTeamScore) && !fixture.isResolved).
+            map(fixture => fixture.isBoosted ? {...fixture, isBoosted: true} : {...fixture, isBoosted: false});
 
             predictionsToPublish?.forEach(fixture => {
                 promises.push(axios.post('/prediction', {...fixture, GameweekPredictionId: newGameweekResponse.data.gameweek[0].id}).catch(err => console.log(err)))
@@ -69,7 +71,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
         <div className={classes.container}>
             {userState?.user ? 
             <div className={classes.table}>
-                <Typography className={classes.tableName} variant='body1'>Upcoming Fixtures</Typography>
+                <Typography className={classes.tableName} variant='body1'>Upcoming Matches</Typography>
                 {currentFixtures.fixtures?.map((fixture) =>
                 (
                     <Match key={fixture.id} fixture={fixture}/>

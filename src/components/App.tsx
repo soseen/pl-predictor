@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import Header from './Header/header';
 import AppContent from './AppContent/app-content';
 import LogInModal from './LogInModal/log-in-modal';
@@ -7,6 +7,7 @@ import FetchingProvider from '../context/fetchingContext';
 import { createMuiTheme, ThemeProvider, } from '@material-ui/core/styles';
 import UserProvider from '../context/userContext';
 import CurrentFixturesProvider from '../context/currentFixturesContext';
+import PlayersProvider from '../context/playersContext';
 
 
 const theme = createMuiTheme({
@@ -42,11 +43,13 @@ const [isModalOpen, setIsModalOpen] = useState<{isOpen: boolean, target: string}
       <ThemeProvider theme={theme}>
         <FetchingProvider>
           <UserProvider >
-            <CurrentFixturesProvider>
-              <LogInModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
-              <Header setIsModalOpen={setIsModalOpen}/>
-              <AppContent setIsModalOpen={setIsModalOpen}/>
-            </CurrentFixturesProvider>
+            <PlayersProvider>
+              <CurrentFixturesProvider>
+                <LogInModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
+                <Header setIsModalOpen={setIsModalOpen}/>
+                <AppContent setIsModalOpen={setIsModalOpen}/>
+              </CurrentFixturesProvider>
+            </PlayersProvider>
           </UserProvider>
         </FetchingProvider>
       </ThemeProvider>

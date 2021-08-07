@@ -14,8 +14,19 @@ export default makeStyles(({ palette, breakpoints }) => ({
             minWidth: "300px"
         },
     },
+    username: {
+        width: "100%",
+        padding: "10px",
+        borderRadius: "2px",
+        backgroundColor: palette.secondary.dark,
+        textAlign: "center",
+        boxSizing: "border-box"
+    },
     title: {
         padding: "10px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
         color: "#000",
     },
     userPredictions: {
@@ -121,5 +132,11 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     span: {
         color: "#000"
+    },
+    points: {
+        padding: "5px",
+        borderRadius: "2px",
+        backgroundColor: palette.secondary.dark,
+        color: "#fff"
     },
 }))

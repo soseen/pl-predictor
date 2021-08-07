@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 
-export default makeStyles(({ spacing, palette, breakpoints }) => ({
+export default makeStyles(({ palette, breakpoints }) => ({
     header: {
         boxSizing: 'border-box',
         width: '100%',
@@ -17,11 +17,18 @@ export default makeStyles(({ spacing, palette, breakpoints }) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: "#1a1a1a",
+        backgroundColor: "#00000099",
         borderBottom: `3px solid ${palette.secondary.dark}`,
+
+        [breakpoints.down("md")]: {
+            padding: '10px',
+        },
+    },
+    navigationFilled: {
+        backgroundColor: "#202020"
     },
     loader: {
-        position: "absolute",
+        position: "fixed",
         zIndex: 200,
         top: "90px",
         width: "100%",
@@ -30,15 +37,29 @@ export default makeStyles(({ spacing, palette, breakpoints }) => ({
         marginBottom: 0,
         marginTop: 0,
         fontSize: "1.125rem",
-        marginRight: "auto"
+        marginRight: "auto",
+
+        [breakpoints.down("md")]: {
+            fontSize: '0.9rem',
+        },
     },
     username: {
-        marginRight: "10px"
+        marginRight: "10px",
+
+        [breakpoints.down("md")]: {
+            display: "none"
+        },
+        
     },
     button: {
-        backgroundColor: palette.secondary.light,
+        backgroundColor: palette.secondary.main,
         textTransform: 'capitalize',
         fontWeight: 'bold',
         marginRight: "5px",
+
+        [breakpoints.down("md")]: {
+            fontSize: '0.7rem',
+            padding: "5px 10px",
+        },
     }
 }));
