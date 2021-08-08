@@ -4,7 +4,7 @@ import React, { createContext, useReducer, Dispatch } from "react";
 export type User = {
     id: number,
     username: string,
-    role: string,
+    role: UserRole,
     points: number,
     isActive: boolean
 }
@@ -20,6 +20,11 @@ type Action = {
 
 export enum Actions {
     setUser = "SetUser"
+}
+
+enum UserRole {
+    user = "User",
+    admin = "Admin"
 }
 
 function userReducer(state: State, action: Action): State {

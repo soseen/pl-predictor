@@ -144,7 +144,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         });
 
         const matchday: CompetitionData = await competitionResponse.json()
-        console.log(matchday);
         setMatchdayNumber(matchday.currentSeason.currentMatchday)
   
         const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?matchday=${matchday.currentSeason.currentMatchday}&status=SCHEDULED`, {
@@ -243,6 +242,12 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                       </li>
                       <li className={classes.rule}>
                         <Typography className={classes.ruleText}>Boost <span className={classes.accent}><FlashOnIcon /></span> jest do wykorzystania w każdej kolejce i podwaja zdobyte punkty za dany typ</Typography>
+                      </li>
+                      <li className={classes.rule}>
+                        <Typography className={classes.ruleText}>Nie trzeba przesyłać wszystkich typów jednocześnie</Typography>
+                      </li>
+                      <li className={classes.rule}>
+                        <Typography className={classes.ruleText}>By sprawdzić typy innego zawodnika, kliknij jego nazwę w tabeli</Typography>
                       </li>
                     </ul>
                 </Box>

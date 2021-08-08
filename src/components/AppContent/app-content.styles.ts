@@ -59,6 +59,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         display: "flex",
         alignItems: "center",
         marginBottom: "5px",
+        flexShrink: 0,
         
         "&::before": {
             content: "''",
@@ -66,6 +67,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
             height: "6px",
             borderRadius: "50%",
             marginRight: "8px",
+            flexShrink: 0,
             backgroundColor: palette.secondary.main
         }
     },
@@ -73,7 +75,9 @@ export default makeStyles(({ palette, breakpoints }) => ({
         display: "flex",
         alignItems: "center",
 
-
+        [breakpoints.down("md")]: {
+            display: "inline-block"
+        },
     },
     accent: {
         color: palette.secondary.main

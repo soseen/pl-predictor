@@ -29,8 +29,8 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     loader: {
         position: "fixed",
-        zIndex: 200,
-        top: "90px",
+        zIndex: 500,
+        top: "80px",
         width: "100%",
     },
     title: {

@@ -38,7 +38,6 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
 
                 predictions.forEach((gameweek) => {
                     const pointsAcquired: number = gameweek.matchPredictions.reduce((points: number, prediction) => {
-                        console.log(prediction);
                         points += prediction.points
                         return points
                     }, 0
@@ -54,8 +53,10 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
     }
 
     useEffect(() => {
-        if (player) { getUserPredictions(); }
-    },[player])
+        if(isOpen) {
+            getUserPredictions();
+        }
+    },[isOpen])
 
     const handleClose = () => {
         setUserPredictions([]);

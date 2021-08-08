@@ -25,23 +25,29 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     bonusButton: {
         textTransform: "capitalize",
-        marginRight: "5px",
-        backgroundColor: "#4f4f4f",
-        color: "#fff",
+        marginRight: "2px",
         padding: "2px",
-        borderRadius: "50%",
         boxShadow: "1px 1px 5px 1px #00000060",
         minWidth: "0",
-        fontSize: "0.8rem",
+        fontSize: "0.2rem",
+        backgroundColor: "#4f4f4f",
+        color: "#fff",
+        borderRadius: "50%",
 
         "&:hover": {
             backgroundColor: palette.secondary.dark
         },
 
-        [breakpoints.up("md")]: {
+        [breakpoints.up("sm")]: {
             padding: "6px",
             marginRight: "10px",
-            fontSize: "1rem"
+            fontSize: "1rem",
+          }
+    },
+    boostIcon: {
+        [breakpoints.down("sm")]: {
+            width: "0.7em",
+            height: "0.7em",
           }
     },
     bonusButtonPressed: {
@@ -51,11 +57,13 @@ export default makeStyles(({ palette, breakpoints }) => ({
         padding: "10px",
         flex: 1,
         color: "#000",
+    },
+    nameText: {
+        fontSize: "0.75rem",
 
-        "& > :nth-child(2)": {
-            textAlign: "right",
-            backgroundColor: "red"
-        }
+        [breakpoints.up("md")]: {
+            fontSize: "0.875rem",
+          }
     },
     scoreInputs: {
         // marginLeft: "auto",
@@ -64,13 +72,13 @@ export default makeStyles(({ palette, breakpoints }) => ({
     scoreInput: {
         outline: 'none',
         backgroundColor: "#e0e0e0",
-        width: "25px",
-        height: "25px",
+        width: "20px",
+        height: "20px",
         border: 'none',
         borderRadius: "2px",
         margin: "0 5px",
         textAlign: "center",
-        fontSize: "1rem",
+        fontSize: "0.8rem",
         cursor: "pointer",
 
         [breakpoints.up("md")]: {

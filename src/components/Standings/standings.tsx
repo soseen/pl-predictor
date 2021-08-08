@@ -174,7 +174,9 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                     </Table>
                 </TableContainer>
             </div>
-            <Button className={classes.button} onClick={updateStandings}>Update</Button>
+            {user?.user?.role === "User" &&
+                <Button className={classes.button} onClick={updateStandings}>Update</Button>
+            }
             <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} matchdayNumber={matchdayNumber} />
         </div>
     );
