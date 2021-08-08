@@ -6,6 +6,7 @@ import { isFetchingContext } from '../../context/fetchingContext';
 import useStyles from './header.styles';
 import { useEffect } from 'react';
 import classNames from 'classnames';
+import logo from '../../img/predictor-logo.png'
 
 type Props = {
     setIsModalOpen: (isModalOpen: {isOpen: boolean, target: string}) => void
@@ -43,7 +44,7 @@ const Header: React.FC<Props> = ({setIsModalOpen}) => {
         <>
         <header className={classes.header}>
             <div className={isHeaderFilled ? classNames(classes.navigation, classes.navigationFilled) : classes.navigation}>
-                <Typography className={classes.title} variant='h2'>League Predictor</Typography>
+                <img src={logo} className={classes.logo} />
                 <Typography variant='body1' className={classes.username}>{userState?.user?.username}</Typography>
                 {userState?.user ? 
                     <Button variant="contained" className={classes.button} onClick={() => dsipatchUser({type: Actions.setUser, payload: undefined})}>Log Out</Button>

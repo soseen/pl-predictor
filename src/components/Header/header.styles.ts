@@ -18,14 +18,14 @@ export default makeStyles(({ palette, breakpoints }) => ({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: "#00000099",
-        borderBottom: `3px solid ${palette.secondary.dark}`,
 
         [breakpoints.down("md")]: {
             padding: '10px',
         },
     },
     navigationFilled: {
-        backgroundColor: "#202020"
+        backgroundColor: "#202020",
+        borderBottom: `3px solid ${palette.secondary.dark}`,
     },
     loader: {
         position: "fixed",
@@ -33,15 +33,10 @@ export default makeStyles(({ palette, breakpoints }) => ({
         top: "80px",
         width: "100%",
     },
-    title: {
-        marginBottom: 0,
-        marginTop: 0,
-        fontSize: "1.125rem",
-        marginRight: "auto",
-
-        [breakpoints.down("md")]: {
-            fontSize: '0.9rem',
-        },
+    logo: {
+        width: "100px",
+        height: "auto",
+        marginRight: "auto"
     },
     username: {
         marginRight: "10px",

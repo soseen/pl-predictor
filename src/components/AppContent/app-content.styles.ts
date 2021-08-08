@@ -17,7 +17,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         [breakpoints.up("md")]: {
             margin: '20px auto',
             marginTop: "90px",
-            maxWidth: "1200px",
+            maxWidth: "1100px",
         },
     },
     error: {

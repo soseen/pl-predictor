@@ -57,5 +57,17 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     userLink: {
         cursor: "pointer"
-    }
+    },
+    showMore: {
+        width: "100%",
+        margin: "10px 0",
+        color: "#fff",
+        display: "flex",
+        justifyContent: "center",
+    },
+    openTableModal: {
+        margin: "auto",
+        color: "#fff",
+        cursor: "pointer"
+    },
 }));

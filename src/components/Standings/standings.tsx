@@ -6,10 +6,11 @@ import { format } from "date-fns"
 import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
 import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
-// import { matchResults as mockResults} from '../../data/matchResults.js';
+import { matchResults as mockResults} from '../../data/matchResults.js';
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import { FixturesData, UserPrediction } from '../AppContent/app-content';
 import UserPredictionsModal from '../UserPredictionsModal/user-predictions-modal';
+import StandingsModal from '../StandingsModal/standings-modal';
 import { isFetchingContext, setIsFetchingContext } from '../../context/fetchingContext';
 import { PlayerActions, PlayersContext, PlayersDispatchContext } from '../../context/playersContext';
 
@@ -43,6 +44,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
     const dispatchPlayers = useContext(PlayersDispatchContext);
     // const [players, setPlayers] = useState<User[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isStandingsOpen, setIsStandingsOpen] = useState<boolean>(false);
     const [player, setPlayer] = useState<User | null>(null);
 
     const standings = useMemo(() => {
@@ -88,7 +90,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
         
                     if(predictionsToResolve?.length > 0) {
                         predictionsToResolve.forEach((prediction) => {
-                            const matchResult = matchResults.matches?.find(match => match.id === prediction.matchId);
+                            const matchResult = mockResults.matches?.find(match => match.id === prediction.matchId);
                             const amplifierValue = prediction.isBoosted ? 1 : 0;
                             let predictionToUpdate = {...prediction, isResolved: true};
             
@@ -147,6 +149,9 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                     <Table className={classes.table}>
                         <TableHead>
                             <TableRow className={classes.tableHeadRow}>
+                                <TableCell size="small" style={{width: '50px'}}>
+                                    <Typography variant={'body1'}>P</Typography>
+                                </TableCell>
                                 <TableCell>
                                     <Typography variant={'body1'}>Name</Typography>
                                 </TableCell>
@@ -155,9 +160,15 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                                 </TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {standings.map((player) => (
+                        {standings.length <= 10 ?
+                            <TableBody>
+                                {standings.map((player, index) => (
                                 <TableRow key={player.id} className={classes.tableRow} onClick={() => handleUserPredictions(player)} tabIndex={0} role="button">
+                                    <TableCell>
+                                        <Typography noWrap variant={'body1'}>
+                                            {index + 1}
+                                        </Typography>
+                                    </TableCell>
                                     <TableCell>
                                         <Typography noWrap variant={'body1'}>
                                             {player.username}
@@ -170,14 +181,49 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                                     </TableCell>
                                 </TableRow>
                             ))}
+                            </TableBody>
+                            :
+                            <TableBody>
+                            {standings.slice(0,10).map((player, index) => (
+                            <TableRow key={player.id} className={classes.tableRow} onClick={() => handleUserPredictions(player)} tabIndex={0} role="button">
+                                <TableCell>
+                                    <Typography noWrap variant={'body1'}>
+                                        {index + 1}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography noWrap variant={'body1'}>
+                                        {player.username}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Typography variant={'body1'}>
+                                        {player.points}
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                            <TableRow className={classes.tableRow}>
+                                <TableCell variant="footer" colSpan={3}>
+                                    <Typography variant={'body1'}>. . .</Typography>
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
+                        }
+                            
                     </Table>
                 </TableContainer>
             </div>
+            {standings.length > 10 &&
+                <Button className={classes.button} onClick={() => setIsStandingsOpen(true)}>
+                    Display all
+                </Button>
+            }
             {user?.user?.role === "User" &&
-                <Button className={classes.button} onClick={updateStandings}>Update</Button>
+                <Button className={classes.button} onClick={updateStandings}>Update Standings</Button>
             }
             <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} matchdayNumber={matchdayNumber} />
+            <StandingsModal isOpen={isStandingsOpen} setIsOpen={setIsStandingsOpen} standings={standings} />
         </div>
     );
 };
