@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import { User, UserContext } from '../../context/userContext';
 import useStyles from './standings.styles';
 import { Table, TableContainer, Typography, TableHead, TableBody, TableRow, TableCell, Button } from '@material-ui/core'
-import { matchResults as mockResults} from '../../data/matchResults.js';
+// import { matchResults as mockResults} from '../../data/matchResults.js';
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import { FixturesData, UserPrediction } from '../AppContent/app-content';
 import UserPredictionsModal from '../UserPredictionsModal/user-predictions-modal';
@@ -73,8 +73,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                     },
                     mode: 'cors'
                 });
-        
-        
+
                 const matchResults: FixturesData = await matchResultsResponse.json()
         
                 const promises: Promise<any>[] = [];
@@ -90,7 +89,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
         
                     if(predictionsToResolve?.length > 0) {
                         predictionsToResolve.forEach((prediction) => {
-                            const matchResult = mockResults.matches?.find(match => match.id === prediction.matchId);
+                            const matchResult = matchResults.matches?.find(match => match.id === prediction.matchId);
                             const amplifierValue = prediction.isBoosted ? 1 : 0;
                             let predictionToUpdate = {...prediction, isResolved: true};
             
@@ -210,7 +209,6 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                             </TableRow>
                         </TableBody>
                         }
-                            
                     </Table>
                 </TableContainer>
             </div>

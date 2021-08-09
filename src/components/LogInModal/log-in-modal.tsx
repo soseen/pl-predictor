@@ -25,7 +25,7 @@ interface UserResponse extends AxiosResponse {
 const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
 
   const classes = useStyles();
-  const [credentials, setCredentials] = useState<{login: string, password: string}>({login: 'sosnoski', password: 'admin123'})
+  const [credentials, setCredentials] = useState<{login: string, password: string}>({login: '', password: ''})
   const [validationMessage, setValidationMessage] = useState<string>('')
   const dispatchUser = useContext(UserDispatchContext);
   const dispatchPlayers = useContext(PlayersDispatchContext);

@@ -49,7 +49,7 @@ const Match: React.FC<Props> = ({ fixture }) => {
             </Button>
             <img className={classes.crest} src={fixtureToDisplay.homeTeam.crestUrl} alt={fixtureToDisplay.homeTeam.name}></img>
             <div className={classes.teamName}>
-                <Typography variant="body2" className={classes.nameText}>{fixture.homeTeam.name}</Typography>
+                <Typography variant="body2" className={classes.nameText}>{fixture.homeTeam.name.substring(0, fixture.homeTeam.name.length-3)}</Typography>
             </div>
             <div className={classes.scoreInputs}>
                 <input 
@@ -108,7 +108,7 @@ const Match: React.FC<Props> = ({ fixture }) => {
                 </input>
             </div>
             <div className={classes.teamName}>
-                <Typography variant="body2" className={classes.nameText} style={{textAlign: "right"}}>{fixture.awayTeam.name}</Typography>
+                <Typography variant="body2" className={classes.nameText} style={{textAlign: "right"}}>{fixture.awayTeam.name.substring(0, fixture.awayTeam.name.length-3)}</Typography>
             </div>
             <img className={classes.crest} src={fixtureToDisplay.awayTeam.crestUrl} alt={fixtureToDisplay.awayTeam.name}></img>
         </Box>

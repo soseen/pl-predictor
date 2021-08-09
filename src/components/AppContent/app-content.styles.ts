@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core'
 export default makeStyles(({ palette, breakpoints }) => ({
     container: {
         width: "100%",
-        marginTop: "52px",
+        marginTop: "62px",
         padding: "15px",
         boxSizing: "border-box",
         boxShadow: "2px 2px 10px 5px #00000090",
@@ -16,7 +16,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
 
         [breakpoints.up("md")]: {
             margin: '20px auto',
-            marginTop: "90px",
+            marginTop: "110px",
             maxWidth: "1100px",
         },
     },
