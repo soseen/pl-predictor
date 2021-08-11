@@ -12,7 +12,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         color: "#fff",
 
         [breakpoints.up("md")]: {
-            minWidth: "300px"
+            minWidth: "400px"
         },
     },
     title: {

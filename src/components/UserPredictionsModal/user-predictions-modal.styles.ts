@@ -13,7 +13,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         boxSizing: "border-box",
 
         [breakpoints.up("md")]: {
-            minWidth: "300px"
+            minWidth: "400px"
         },
     },
     username: {
@@ -93,7 +93,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     name: {
         [breakpoints.down("md")]: {
-            fontSize: "0.7rem",
+            fontSize: "0.75rem",
         },
     },
     crest: {
