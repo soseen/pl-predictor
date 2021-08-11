@@ -195,17 +195,18 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
            
             setSeasonId(fixtures[0].season.id)
   
-  
-            const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
-              headers: {
-                'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
-              },
-              mode: 'cors'
-            });
-            const teamsData: TeamsData = await teamsResponse.json()
-            const { teams } = teamsData;
-            setTeams(teams);
-  
+            if (teams.length < 1) {
+              const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
+                headers: {
+                  'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
+                },
+                mode: 'cors'
+              });
+              const teamsData: TeamsData = await teamsResponse.json()
+              const { teams } = teamsData;
+              setTeams(teams);
+              console.log(teams);
+            }     
           }
       } catch (error) {
         console.log(error)
