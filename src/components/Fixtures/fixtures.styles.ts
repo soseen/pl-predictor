@@ -27,8 +27,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
     table: {
         width: "100%",
         margin: "auto",
-        borderRadius: "2px",
-        boxShadow: "1px 1px 10px 3px #00000060"
+        borderRadius: "2px"
     },
     tableName: {
         backgroundColor: palette.secondary.dark,

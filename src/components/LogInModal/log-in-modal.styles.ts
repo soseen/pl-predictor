@@ -1,14 +1,19 @@
 import { makeStyles } from '@material-ui/core'
 
-export default makeStyles(({ palette }) => ({
+export default makeStyles(({ palette, breakpoints }) => ({
     modal: {
-        width: "400px",
+        width: "100%",
         backgroundColor: palette.secondary.dark,
         border: `1px solid ${palette.secondary.main}`,
         borderRadius: "2px",
         display: "flex",
         justifyContent: "center",
-        boxShadow: "1px 1px 15px 3px #00000060"
+        boxSizing: "border-box",
+        boxShadow: "1px 1px 15px 3px #00000060",
+
+        [breakpoints.up("md")]: {
+            minWidth: "400px"
+        }
     },
     modalContent: {
         padding: "20px",
