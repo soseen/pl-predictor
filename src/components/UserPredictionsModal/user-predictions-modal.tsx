@@ -81,7 +81,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
                                         <div className={prediction.isBoosted ? classNames(classes.rowBoosted, classes.row) : classes.row} key={prediction.id}>
                                             <img className={classes.crest} src={teams.find(team => team.name === prediction.homeTeamName)?.crestUrl} alt={prediction.homeTeamName}></img>
                                             <div className={classes.teamName}>
-                                                <Typography variant="body2">{prediction.homeTeamName}</Typography>
+                                                <Typography className={classes.name} variant="body2">{prediction.homeTeamName.substring(0, prediction.homeTeamName.length-3)}</Typography>
                                             </div>
                                             <div className={classes.scoreWrapper}>
                                                 <Typography className={prediction.isExactScore ? classNames(classes.exactScore, classes.score) : prediction.isCorrectScore ? classNames(classes.correctScore, classes.score) :  prediction.isResolved ? classNames(classes.incorrectScore, classes.score) : classes.score} variant="body2">{prediction.homeTeamScore}</Typography>
@@ -89,7 +89,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
                                                 <Typography className={prediction.isExactScore ? classNames(classes.exactScore, classes.score) : prediction.isCorrectScore ? classNames(classes.correctScore, classes.score) :  prediction.isResolved ? classNames(classes.incorrectScore, classes.score) : classes.score} variant="body2">{prediction.awayTeamScore}</Typography>
                                             </div>
                                             <div className={classes.teamName}>
-                                                <Typography variant="body2" style={{textAlign: "right"}}>{prediction.awayTeamName}</Typography>
+                                                <Typography className={classes.name} variant="body2" style={{textAlign: "right"}}>{prediction.awayTeamName.substring(0, prediction.awayTeamName.length-3)}</Typography>
                                             </div>
                                             <img className={classes.crest} src={teams.find(team => team.name === prediction.awayTeamName)?.crestUrl} alt={prediction.homeTeamName}></img>
                                         </div>

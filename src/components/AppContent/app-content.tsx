@@ -155,7 +155,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         const currentMatchesData: FixturesData = await currentMatchesResponse.json()
 
           if (currentMatchesData.matches) {
-            const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false}))
+            const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false, isBoosted: false}))
 
             if(userState?.user?.id) {
               const userGameweekPredictionsResponse = await axios.post('/userGameweek', {

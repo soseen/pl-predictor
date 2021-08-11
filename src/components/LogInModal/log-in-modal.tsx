@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Button, Modal, Typography } from '@material-ui/core';
+import { Button, Dialog, Typography } from '@material-ui/core';
 import useStyles from './log-in-modal.styles';
 import { axios } from '../../axios/axios'
 import { Actions, User, UserDispatchContext } from '../../context/userContext';
@@ -62,12 +62,12 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
         const usersResponse: UsersResponse = await axios.get('/users');
         dispatchPlayers({type: PlayerActions.setUser, payload: usersResponse.data.users});
         setValidationMessage(newUserResponse.data.message);
-        setFetching({type: FetchingAction.setIsFetching, payload: false})
       } catch (error) {
         console.log(error)
         setFetching({type: FetchingAction.setIsFetching, payload: false})
       }
     }
+    setFetching({type: FetchingAction.setIsFetching, payload: false})
   }
 
   const handleLogIn = async () => {
@@ -83,7 +83,6 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
         if (userResponse.data.user) {
           dispatchUser({type: Actions.setUser, payload: userResponse.data.user})
           handleClose();
-          setFetching({type: FetchingAction.setIsFetching, payload: false})
         }
 
       } catch (error) {
@@ -91,10 +90,11 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
         setFetching({type: FetchingAction.setIsFetching, payload: false})
       }
     }
+    setFetching({type: FetchingAction.setIsFetching, payload: false})
   }
 
     return (
-        <Modal
+        <Dialog
         open={isModalOpen.isOpen}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
@@ -119,7 +119,7 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
               <Button className={classes.button} onClick={isModalOpen.target === 'register' ? handleRegister : handleLogIn}>{isModalOpen.target === 'register' ? 'Register' : 'Log In'}</Button>
             </div>
           </div>
-        </Modal>
+        </Dialog>
     );
 };
 

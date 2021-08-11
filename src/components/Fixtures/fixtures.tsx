@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext } from 'react';
+import React, { useContext, ChangeEvent, useMemo } from 'react';
 import { CurrentFixturesContext, CurrentFixturesDispatchContext, Actions } from '../../context/currentFixturesContext';
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import useStyles from './fixtures.styles'
-import { Button, Typography } from '@material-ui/core';
+import { Button, InputLabel, Typography, NativeSelect } from '@material-ui/core';
 import Match from '../Match/match';
 import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
 import { setIsFetchingContext } from '../../context/fetchingContext';
+import FlashOnIcon from '@material-ui/icons/FlashOn';
 
 type Props = {
     setIsModalOpen: (isModalOpen: {isOpen: boolean, target: string}) => void,
@@ -19,9 +20,10 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
 
     const classes = useStyles()
     const currentFixtures = useContext(CurrentFixturesContext);
-    const currentFixturesDispatch = useContext(CurrentFixturesDispatchContext);
+    const dispatchFixtures = useContext(CurrentFixturesDispatchContext);
     const userState = useContext(UserContext);
     const setFetching = useContext(setIsFetchingContext);
+    const isBoostUsedAlready = !!currentFixtures?.fixtures?.find(fixture => (fixture.isBoosted && fixture.isSubmited));
 
     const submitPredictions = async () => {
         setFetching({type: FetchAction.setIsFetching, payload: true});
@@ -58,7 +60,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                     return fixture
                 }
             })
-            currentFixturesDispatch({type: Actions.setFixtures, payload: fixturesToDispatch});
+            dispatchFixtures({type: Actions.setFixtures, payload: fixturesToDispatch});
             await Promise.all(promises)
         }
         catch (error) {
@@ -66,6 +68,25 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
         }
         setFetching({type: FetchAction.setIsFetching, payload: false});
     }
+
+    const handleSelectChange = ({ target }: ChangeEvent<HTMLSelectElement>) => {
+        const fixture = currentFixtures.fixtures?.find(fixture => fixture.id === parseInt(target.value));
+        if(!isBoostUsedAlready && !fixture?.isSubmited) {
+            dispatchFixtures(
+                {
+                    type: Actions.setBoostedPrediction,
+                    payload: {
+                        id: fixture?.id
+                    }
+                }
+            )
+        }
+    }
+
+    const selectValue = useMemo(() => {
+        const fixture = currentFixtures?.fixtures?.find(fixture => fixture.isBoosted)?.id;
+        return fixture ?? "";
+    },[currentFixtures.fixtures])
 
     return (
         <div className={classes.container}>
@@ -77,6 +98,24 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                     <Match key={fixture.id} fixture={fixture}/>
                 )
                 )}
+                <div className={classes.formControl}>
+                    <InputLabel className={classes.label}><span className={classes.accent}><FlashOnIcon/></span> Boost</InputLabel>
+                    <NativeSelect
+                        className={classes.select}
+                        value={selectValue}
+                        onChange={handleSelectChange}
+                        classes={{ selectMenu : classes.customSelectMenu }}
+                        inputProps={{ className: classes.customSelectMenu}}
+                        disabled={isBoostUsedAlready}
+                    >   
+                        <option value=""></option>
+                        {currentFixtures.fixtures?.map(fixture => (
+                            <option className={classes.customSelectMenu} key={fixture.id} value={fixture.id}>
+                                    {`${fixture.homeTeam.name.substring(0, fixture.homeTeam.name.length-3)} - ${fixture.awayTeam.name.substring(0, fixture.awayTeam.name.length-3)}`}
+                            </option>
+                        ))}
+                    </NativeSelect>
+                </div>    
                 <Button variant="contained" className={classes.submitButton} onClick={submitPredictions}>Submit</Button>
             </div>
             :

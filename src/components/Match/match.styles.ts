@@ -24,21 +24,20 @@ export default makeStyles(({ palette, breakpoints }) => ({
         backgroundColor: "#c74c4c"
     },
     bonusButton: {
-        textTransform: "capitalize",
-        marginRight: "2px",
-        padding: "2px",
-        boxShadow: "1px 1px 5px 1px #00000060",
-        minWidth: "0",
-        fontSize: "0.2rem",
-        backgroundColor: "#4f4f4f",
-        color: "#fff",
-        borderRadius: "50%",
+        display: "none",
 
         "&:hover": {
             backgroundColor: palette.secondary.dark
         },
 
         [breakpoints.up("sm")]: {
+            display: "flex",
+            textTransform: "capitalize",
+            boxShadow: "1px 1px 5px 1px #00000060",
+            minWidth: "0",
+            backgroundColor: "#4f4f4f",
+            color: "#fff",
+            borderRadius: "50%",
             padding: "6px",
             marginRight: "10px",
             fontSize: "1rem",
@@ -72,11 +71,11 @@ export default makeStyles(({ palette, breakpoints }) => ({
     scoreInput: {
         outline: 'none',
         backgroundColor: "#e0e0e0",
-        width: "20px",
-        height: "20px",
+        width: "25px",
+        height: "25px",
         border: 'none',
         borderRadius: "2px",
-        margin: "0 5px",
+        margin: "0 2px",
         textAlign: "center",
         fontSize: "0.8rem",
         cursor: "pointer",

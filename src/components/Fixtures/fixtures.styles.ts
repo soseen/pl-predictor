@@ -57,5 +57,37 @@ export default makeStyles(({ palette, breakpoints }) => ({
         "&:hover": {
             backgroundColor: palette.secondary.main
         },
+    },
+    label: {
+        color: "#fff",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: "8px",
+        fontSize: "0.8rem",
+    },
+    accent: {
+        color: palette.secondary.main,
+    },
+    formControl: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        margin: "10px 0",
+        padding: "5px",
+
+        [breakpoints.up("sm")]: {
+            display: "none"
+        },
+    },
+    select: {
+        color: "#000",
+        backgroundColor: palette.secondary.main,
+        padding: "5px",
+        borderRadius: "2px",
+        fontSize: "0.8rem"
+    },
+    customSelectMenu: {
+        backgroundColor: palette.secondary.main
     }
 }));

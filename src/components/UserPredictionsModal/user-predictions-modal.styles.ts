@@ -5,10 +5,12 @@ export default makeStyles(({ palette, breakpoints }) => ({
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        margin: "20px",
         alignItems: "center",
         padding: "5px",
         backgroundColor: palette.secondary.main,
         color: "#fff",
+        boxSizing: "border-box",
 
         [breakpoints.up("md")]: {
             minWidth: "300px"
@@ -62,6 +64,10 @@ export default makeStyles(({ palette, breakpoints }) => ({
         borderRadius: "2px",
         borderBottom: `1px solid #e0e0e0`,
         boxSizing: "border-box",
+
+        [breakpoints.down("md")]: {
+            padding: "2px"
+        },
     },
     rowBoosted: {
         backgroundColor: palette.secondary.dark,
@@ -71,11 +77,24 @@ export default makeStyles(({ palette, breakpoints }) => ({
         padding: "10px",
         flex: 1,
         color: "#000",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
 
         "& > :nth-child(2)": {
             textAlign: "right",
             backgroundColor: "red"
-        }
+        },
+
+        [breakpoints.down("md")]: {
+            fontSize: "0.7rem",
+            padding: "8px 5px"
+        },
+    },
+    name: {
+        [breakpoints.down("md")]: {
+            fontSize: "0.7rem",
+        },
     },
     crest: {
         width: "15px",

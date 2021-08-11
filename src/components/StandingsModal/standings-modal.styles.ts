@@ -7,6 +7,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         flexDirection: "column",
         alignItems: "center",
         padding: "5px",
+        margin: "32px",
         backgroundColor: palette.secondary.main,
         color: "#fff",
 
