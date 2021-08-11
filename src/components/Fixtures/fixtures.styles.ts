@@ -74,7 +74,6 @@ export default makeStyles(({ palette, breakpoints }) => ({
         display: "flex",
         justifyContent: "space-between",
         margin: "10px 0",
-        padding: "5px",
 
         [breakpoints.up("sm")]: {
             display: "none"
