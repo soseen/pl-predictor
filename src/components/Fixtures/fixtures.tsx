@@ -99,7 +99,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                 )
                 )}
                 <div className={classes.formControl}>
-                    <InputLabel className={classes.label}><span className={classes.accent}><FlashOnIcon/></span> Boost</InputLabel>
+                    <div className={classes.label}><span className={classes.accent}><FlashOnIcon/></span> Boost</div>
                     <NativeSelect
                         className={classes.select}
                         value={selectValue}

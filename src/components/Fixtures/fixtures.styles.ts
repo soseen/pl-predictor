@@ -65,6 +65,7 @@ export default makeStyles(({ palette, breakpoints }) => ({
         alignItems: "center",
         marginRight: "8px",
         fontSize: "0.8rem",
+        flexWrap: "nowrap"
     },
     accent: {
         color: palette.secondary.main,
