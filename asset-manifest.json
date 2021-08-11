@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/pl-predictor/static/css/main.cae22e63.chunk.css",
-    "main.js": "/pl-predictor/static/js/main.5b75a534.chunk.js",
-    "main.js.map": "/pl-predictor/static/js/main.5b75a534.chunk.js.map",
-    "runtime-main.js": "/pl-predictor/static/js/runtime-main.789ebffc.js",
-    "runtime-main.js.map": "/pl-predictor/static/js/runtime-main.789ebffc.js.map",
-    "static/js/2.e11cd5b1.chunk.js": "/pl-predictor/static/js/2.e11cd5b1.chunk.js",
-    "static/js/2.e11cd5b1.chunk.js.map": "/pl-predictor/static/js/2.e11cd5b1.chunk.js.map",
-    "static/js/3.b93d9bc8.chunk.js": "/pl-predictor/static/js/3.b93d9bc8.chunk.js",
-    "static/js/3.b93d9bc8.chunk.js.map": "/pl-predictor/static/js/3.b93d9bc8.chunk.js.map",
-    "index.html": "/pl-predictor/index.html",
-    "static/css/main.cae22e63.chunk.css.map": "/pl-predictor/static/css/main.cae22e63.chunk.css.map",
-    "static/js/2.e11cd5b1.chunk.js.LICENSE.txt": "/pl-predictor/static/js/2.e11cd5b1.chunk.js.LICENSE.txt",
-    "static/media/app.scss": "/pl-predictor/static/media/ball-1.84fb8676.png",
-    "static/media/predictor-logo.5b405207.png": "/pl-predictor/static/media/predictor-logo.5b405207.png"
+    "main.css": "/static/css/main.e94d72de.chunk.css",
+    "main.js": "/static/js/main.6ecec9b5.chunk.js",
+    "main.js.map": "/static/js/main.6ecec9b5.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.75ccd7e1.js",
+    "runtime-main.js.map": "/static/js/runtime-main.75ccd7e1.js.map",
+    "static/js/2.f4b8e85e.chunk.js": "/static/js/2.f4b8e85e.chunk.js",
+    "static/js/2.f4b8e85e.chunk.js.map": "/static/js/2.f4b8e85e.chunk.js.map",
+    "static/js/3.159fb484.chunk.js": "/static/js/3.159fb484.chunk.js",
+    "static/js/3.159fb484.chunk.js.map": "/static/js/3.159fb484.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.e94d72de.chunk.css.map": "/static/css/main.e94d72de.chunk.css.map",
+    "static/js/2.f4b8e85e.chunk.js.LICENSE.txt": "/static/js/2.f4b8e85e.chunk.js.LICENSE.txt",
+    "static/media/app.scss": "/static/media/ball-1.84fb8676.png",
+    "static/media/predictor-logo.5b405207.png": "/static/media/predictor-logo.5b405207.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.789ebffc.js",
-    "static/js/2.e11cd5b1.chunk.js",
-    "static/css/main.cae22e63.chunk.css",
-    "static/js/main.5b75a534.chunk.js"
+    "static/js/runtime-main.75ccd7e1.js",
+    "static/js/2.f4b8e85e.chunk.js",
+    "static/css/main.e94d72de.chunk.css",
+    "static/js/main.6ecec9b5.chunk.js"
   ]
 }
