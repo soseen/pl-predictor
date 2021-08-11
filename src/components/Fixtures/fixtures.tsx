@@ -3,7 +3,7 @@ import React, { useContext, ChangeEvent, useMemo } from 'react';
 import { CurrentFixturesContext, CurrentFixturesDispatchContext, Actions } from '../../context/currentFixturesContext';
 import { Actions as FetchAction } from '../../context/fetchingContext';
 import useStyles from './fixtures.styles'
-import { Button, InputLabel, Typography, NativeSelect } from '@material-ui/core';
+import { Button, Typography, NativeSelect } from '@material-ui/core';
 import Match from '../Match/match';
 import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';

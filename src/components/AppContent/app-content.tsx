@@ -152,7 +152,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
             },
             mode: 'cors'
         });
-        const currentMatchesData: FixturesData = await currentMatchesResponse.json()
+        const currentMatchesData: FixturesData = await currentMatchesResponse.json();
 
           if (currentMatchesData.matches) {
             const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false, isBoosted: false}))
@@ -205,7 +205,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
               const teamsData: TeamsData = await teamsResponse.json()
               const { teams } = teamsData;
               setTeams(teams);
-              console.log(teams);
             }     
           }
       } catch (error) {
