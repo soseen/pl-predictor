@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/core'
 
 export default makeStyles(({ palette }) => ({
     modal: {
+        width: "400px",
         backgroundColor: palette.secondary.dark,
         border: `1px solid ${palette.secondary.main}`,
         borderRadius: "2px",
@@ -11,7 +12,7 @@ export default makeStyles(({ palette }) => ({
     },
     modalContent: {
         padding: "20px",
-        width: "100%",
+        width: "80%",
         color: "white",
         textAlign: "center"
     },

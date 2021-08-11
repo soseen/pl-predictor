@@ -217,7 +217,7 @@ const Standings: React.FC<Props> = ({ matchdayNumber }) => {
                     Display all
                 </Button>
             }
-            {user?.user?.role === "User" &&
+            {user?.user?.role === "Admin" &&
                 <Button className={classes.button} onClick={updateStandings}>Update Standings</Button>
             }
             <UserPredictionsModal isOpen={isOpen} setIsOpen={setIsOpen} player={player} matchdayNumber={matchdayNumber} />
