@@ -18,7 +18,7 @@ const Header: React.FC<Props> = ({setIsModalOpen}) => {
 
     const classes = useStyles();
     const userState = useContext(UserContext);
-    const dsipatchUser = useContext(UserDispatchContext);
+    const dispatchUser = useContext(UserDispatchContext);
     const loading = useContext(isFetchingContext);
     const [isHeaderFilled, setIsHeaderFilled] = useState<boolean>(false)
 
@@ -38,7 +38,10 @@ const Header: React.FC<Props> = ({setIsModalOpen}) => {
         }
     }, [])
 
-    useEffect
+    const handleLogOut = () => {
+        dispatchUser({type: Actions.setUser, payload: undefined});
+        localStorage.setItem('user', JSON.stringify(null));
+    }
 
     return (
         <>
@@ -47,7 +50,7 @@ const Header: React.FC<Props> = ({setIsModalOpen}) => {
                 <img src={logo} className={classes.logo} />
                 <Typography variant='body1' className={classes.username}>{userState?.user?.username}</Typography>
                 {userState?.user ? 
-                    <Button variant="contained" className={classes.button} onClick={() => dsipatchUser({type: Actions.setUser, payload: undefined})}>Log Out</Button>
+                    <Button variant="contained" className={classes.button} onClick={handleLogOut}>Log Out</Button>
                     :
                     <Button variant="contained" className={classes.button} onClick={() => setIsModalOpen({isOpen: true, target: 'log-in'})}>Log In</Button>
                 }

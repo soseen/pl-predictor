@@ -4,29 +4,15 @@ import useStyles from './app-content.styles'
 import { CurrentFixturesDispatchContext } from '../../context/currentFixturesContext';
 import { Actions } from '../../context/currentFixturesContext';
 import { Actions as FetchAction } from '../../context/fetchingContext';
+import { Actions as UserAction } from '../../context/userContext';
 import { TeamsContext } from '../../context/teamsContext';
 import Fixtures from '../Fixtures/fixtures';
 import Standings from '../Standings/standings';
-import { UserContext } from '../../context/userContext';
+import { UserContext, UserDispatchContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
 import { setIsFetchingContext } from '../../context/fetchingContext';
+import { Actions as FetchingAction} from '../../context/fetchingContext';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
-
-type CompetitionData = {
-  id: number,
-  area: {
-    id: number,
-    name: string
-  },
-  code: string,
-  currentSeason: {
-    id: number
-    currentMatchday: number,
-    startDate: string,
-    endDate: string
-  },
-  name: string
-}
 
 export type Fixture = {
   id: number,
@@ -124,6 +110,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const classes = useStyles();
     const currentFixturesDispatch = useContext(CurrentFixturesDispatchContext);
     const userState = useContext(UserContext);
+    const dispatchUser = useContext(UserDispatchContext);
     const setFetching = useContext(setIsFetchingContext);
     const [matchdayNumber, setMatchdayNumber] = useState<number>(0);
     const [seasonId, setSeasonId] = useState<number | null>(null);
@@ -131,28 +118,27 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const [error, setError] = useState<string | null>(null);
 
     const teamsProvider = useMemo(() => teams, [teams])
+
+    useEffect(() => {
+      const user = JSON.parse(localStorage.getItem('user') || '');
+      if(user) {
+        dispatchUser({type: UserAction.setUser, payload: user})
+      }
+    }, []);
   
     const fetchData = useCallback(async () => {
       try {
         setError(null);
-
-        const competitionResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/`, {
-          headers: {
-            'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
-          },
-          mode: 'cors'
-        });
-
-        const matchday: CompetitionData = await competitionResponse.json()
-        setMatchdayNumber(matchday.currentSeason.currentMatchday)
-  
-        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?matchday=${matchday.currentSeason.currentMatchday}&status=SCHEDULED`, {
+        setFetching({type: FetchingAction.setIsFetching, payload: true})
+        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?status=SCHEDULED`, {
             headers: {
               'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
             },
             mode: 'cors'
         });
-        const currentMatchesData: FixturesData = await currentMatchesResponse.json();
+        let currentMatchesData: FixturesData = await currentMatchesResponse.json();
+        currentMatchesData = {...currentMatchesData, matches: currentMatchesData.matches.filter(m => m.matchday === currentMatchesData.matches[0].matchday)}
+        setMatchdayNumber(currentMatchesData.matches[0].matchday ?? 0)
 
           if (currentMatchesData.matches) {
             const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false, isBoosted: false}))
@@ -160,9 +146,10 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
             if(userState?.user?.id) {
               const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
                 UserId: userState?.user?.id,
-                gameweek: matchday.currentSeason.currentMatchday,
-                seasonId: fixtures[0].season.id
+                gameweek: currentMatchesData.matches[0].matchday,
+                seasonId: currentMatchesData.matches[0].season.id
             });
+            console.log(userGameweekPredictionsResponse);
             
             if (userGameweekPredictionsResponse.data?.gameweek?.matchPredictions.length > 0){
               const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions

@@ -40,6 +40,8 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     tableContainer: {
         width: "100%",
+        maxHeight: "600px",
+        overflowY: "auto",
     },
     table: {
         width: "100%",

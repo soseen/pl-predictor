@@ -44,6 +44,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
                     )
                     gameweekData.push({...gameweek, points: pointsAcquired})
                 });
+                gameweekData.sort((a,b) => b.gameweek - a.gameweek);
                 setUserPredictions(gameweekData);
             }
         } catch (error) {
@@ -65,7 +66,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
 
     return(
         <Dialog classes={{ paper: classes.dialogMain}} open={isOpen} onClose={handleClose}>
-            <Typography variant="h4" component="h2" className={classes.username}>{player?.username}</Typography>
+            <Typography variant="h5" component="h2" className={classes.username}>{player?.username}</Typography>
             <Box className={classes.userPredictions}>
                 {userPredictions.length > 0 ? 
                     <div className={classes.tableContainer}>

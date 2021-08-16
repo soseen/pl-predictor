@@ -14,7 +14,7 @@ type Props = {
     setIsModalOpen: (isModalOpen: {isOpen: boolean, target: string}) => void
 }
 
-interface UserResponse extends AxiosResponse {
+export interface UserResponse extends AxiosResponse {
   data: {
     message: string,
     isLoggedIn: boolean,
@@ -82,6 +82,7 @@ const LogInModal: React.FC<Props> = ({isModalOpen, setIsModalOpen}) => {
         setValidationMessage(userResponse.data.message);
         if (userResponse.data.user) {
           dispatchUser({type: Actions.setUser, payload: userResponse.data.user})
+          localStorage.setItem('user', JSON.stringify(userResponse.data.user));
           handleClose();
         }
 
