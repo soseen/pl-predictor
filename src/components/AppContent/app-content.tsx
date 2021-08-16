@@ -120,10 +120,9 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const teamsProvider = useMemo(() => teams, [teams])
 
     useEffect(() => {
-      const user = (localStorage.getItem('user') || '');
-      console.log(user);
-      if(JSON.parse(user)) {
-        dispatchUser({type: UserAction.setUser, payload: JSON.parse(user)})
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if(user.id) {
+        dispatchUser({type: UserAction.setUser, payload: user})
       }
     }, []);
   
