@@ -121,7 +121,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
 
     useEffect(() => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if(user.id) {
+      if(user !== {}) {
         dispatchUser({type: UserAction.setUser, payload: user})
       }
     }, []);
@@ -149,7 +149,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                 gameweek: currentMatchesData.matches[0].matchday,
                 seasonId: currentMatchesData.matches[0].season.id
             });
-            console.log(userGameweekPredictionsResponse);
             
             if (userGameweekPredictionsResponse.data?.gameweek?.matchPredictions.length > 0){
               const userPredictions: UserPrediction[] = userGameweekPredictionsResponse.data?.gameweek.matchPredictions
