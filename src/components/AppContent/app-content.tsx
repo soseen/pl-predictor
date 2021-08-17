@@ -229,9 +229,6 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                         <Typography className={classes.ruleText}>Boost <span className={classes.accent}><FlashOnIcon /></span> jest do wykorzystania w każdej kolejce i podwaja zdobyte punkty za dany typ</Typography>
                       </li>
                       <li className={classes.rule}>
-                        <Typography className={classes.ruleText}>Nie trzeba przesyłać wszystkich typów jednocześnie</Typography>
-                      </li>
-                      <li className={classes.rule}>
                         <Typography className={classes.ruleText}>By sprawdzić typy innego zawodnika, kliknij jego nazwę w tabeli</Typography>
                       </li>
                     </ul>
