@@ -138,8 +138,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         });
         let currentMatchesData: FixturesData = await currentMatchesResponse.json();
         currentMatchesData = {...currentMatchesData, matches: currentMatchesData.matches.filter(m => m.matchday === currentMatchesData.matches[0].matchday)}
-        setMatchdayNumber(currentMatchesData.matches[0].matchday ?? 0)
-
+        setMatchdayNumber(currentMatchesData.matches[0].matchday ?? 0);
           if (currentMatchesData.matches) {
             const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false, isBoosted: false}))
 
@@ -179,7 +178,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
               }
             }
            
-            setSeasonId(fixtures[0].season.id)
+            setSeasonId(fixtures[0].season.id);
   
             if (teams.length < 1) {
               const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
