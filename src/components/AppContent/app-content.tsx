@@ -120,12 +120,14 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const teamsProvider = useMemo(() => teams, [teams])
 
     useEffect(() => {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if(user !== {}) {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      if(user) {
         dispatchUser({type: UserAction.setUser, payload: user})
+      } else {
+        dispatchUser({type: UserAction.setUser, payload: undefined})
       }
     }, []);
-  
+
     const fetchData = useCallback(async () => {
       try {
         setError(null);
