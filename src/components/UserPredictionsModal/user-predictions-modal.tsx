@@ -32,7 +32,6 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
         try {
             const userPredictionsResponse = await axios.post('/userPredictions', {id: player?.id} )
             const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions;
-            // const predictions: Gameweek[] = userPredictionsResponse.data.userPredictions.filter((gp: Gameweek) => gp.gameweek !== matchdayNumber);
             if (predictions) { 
                 const gameweekData: GameweekWithPoints[] = [];
 

@@ -9,21 +9,35 @@ import { UserContext } from '../../context/userContext';
 import { axios } from '../../axios/axios';
 import { setIsFetchingContext } from '../../context/fetchingContext';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 type Props = {
     setIsModalOpen: (isModalOpen: {isOpen: boolean, target: string}) => void,
+    currentMatchday: number,
     matchdayNumber: number,
     seasonId?: number | null,
+    fetchData: (matchdayNumber: number | null) => void;
 }
 
-const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) => {
+const Fixtures: React.FC<Props> = ({setIsModalOpen, currentMatchday, matchdayNumber, seasonId, fetchData}) => {
 
-    const classes = useStyles()
+    const classes = useStyles();
     const currentFixtures = useContext(CurrentFixturesContext);
     const dispatchFixtures = useContext(CurrentFixturesDispatchContext);
     const userState = useContext(UserContext);
     const setFetching = useContext(setIsFetchingContext);
     const isBoostUsedAlready = !!currentFixtures?.fixtures?.find(fixture => (fixture.isBoosted && fixture.isSubmited));
+
+    const matchdayValues = useMemo(() => {
+        let values: number[] = []
+        if(currentMatchday > 0){
+            for(let i = 1; i<= currentMatchday + 1; i++){
+                values = [...values, i];
+            }
+        }
+        return values;
+    }, [currentMatchday])
 
     const submitPredictions = async () => {
         setFetching({type: FetchAction.setIsFetching, payload: true});
@@ -69,6 +83,10 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
         setFetching({type: FetchAction.setIsFetching, payload: false});
     }
 
+    const handleGameweekSelectChange = ({ target }: ChangeEvent<HTMLSelectElement>) => {
+        fetchData(parseInt(target.value));
+    }
+
     const handleSelectChange = ({ target }: ChangeEvent<HTMLSelectElement>) => {
         const fixture = currentFixtures.fixtures?.find(fixture => fixture.id === parseInt(target.value));
         if(!isBoostUsedAlready && !fixture?.isSubmited) {
@@ -92,7 +110,30 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
         <div className={classes.container}>
             {userState?.user ? 
             <div className={classes.table}>
-                <Typography className={classes.tableName} variant='body1'>Upcoming Matches</Typography>
+                <Typography className={classes.tableName} variant='body1'>Gameweek {matchdayNumber}</Typography>
+                <div className={classes.titleContainer}>
+                <NativeSelect
+                    className={classes.select}
+                    value={matchdayNumber}
+                    onChange={handleGameweekSelectChange}
+                    classes={{ selectMenu : classes.customSelectMenu }}
+                    inputProps={{ className: classes.customSelectMenu}}
+                >   
+                    {matchdayValues.map(matchday => (
+                        <option className={classes.customSelectMenu} key={matchday} value={matchday}>
+                                {`Gameweek ${matchday}`}
+                        </option>
+                    ))}
+                </NativeSelect>
+                <div className={classes.tableButtons}>
+                <Button variant="contained" className={classes.changeGameweekButton} onClick={() => fetchData(matchdayNumber - 1)}>
+                    <ArrowBackIosIcon />
+                </Button>
+                <Button variant="contained" className={classes.changeGameweekButton} onClick={() => fetchData(matchdayNumber + 1)}>
+                    <ArrowForwardIosIcon />
+                </Button>
+                </div>
+                </div>
                 {currentFixtures.fixtures?.map((fixture) =>
                 (
                     <Match key={fixture.id} fixture={fixture}/>
@@ -110,7 +151,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, matchdayNumber, seasonId}) =
                     >   
                         <option value=""></option>
                         {currentFixtures.fixtures?.map(fixture => (
-                            <option className={classes.customSelectMenu} key={fixture.id} value={fixture.id}>
+                            <option className={classes.customSelectMenu} key={fixture.id} value={fixture.id} disabled={fixture.isSubmited}>
                                     {`${fixture.homeTeam.name.substring(0, fixture.homeTeam.name.length-3)} - ${fixture.awayTeam.name.substring(0, fixture.awayTeam.name.length-3)}`}
                             </option>
                         ))}

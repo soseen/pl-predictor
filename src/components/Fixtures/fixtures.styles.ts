@@ -29,6 +29,42 @@ export default makeStyles(({ palette, breakpoints }) => ({
         margin: "auto",
         borderRadius: "2px"
     },
+    titleContainer: {
+        width: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: palette.secondary.light,
+        padding: '10px',
+    },
+    gameweekSelect: {
+        color: "#202020",
+        fontSize: 14
+    },
+    tableButtons: {
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center"
+    },
+    changeGameweekButton: {
+        fontSize: 30,
+        padding: 5,
+        backgroundColor: palette.secondary.dark,
+        color: "#fff",
+        marginLeft: 5,
+        minWidth: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+
+        "& svg": {
+            width: "0.8em",
+            height: "0.8em"
+        },
+        "&:hover": {
+            backgroundColor: palette.secondary.main
+        },
+    },
     tableName: {
         backgroundColor: palette.secondary.dark,
         textAlign: 'center',
@@ -84,7 +120,8 @@ export default makeStyles(({ palette, breakpoints }) => ({
         backgroundColor: palette.secondary.main,
         padding: "5px",
         borderRadius: "2px",
-        fontSize: "0.8rem"
+        fontSize: "0.8rem",
+        minWidth: 150
     },
     customSelectMenu: {
         backgroundColor: palette.secondary.main

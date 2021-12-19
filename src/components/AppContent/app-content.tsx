@@ -52,7 +52,8 @@ export type Fixture = {
   isCorrectScore: boolean,
   isExactScore: boolean,
   isBoosted: boolean,
-  GameweekPredictionId: number
+  GameweekPredictionId: number,
+  status: string
 }
 
 export type UserPrediction = {
@@ -113,6 +114,7 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
     const dispatchUser = useContext(UserDispatchContext);
     const setFetching = useContext(setIsFetchingContext);
     const [matchdayNumber, setMatchdayNumber] = useState<number>(0);
+    const [currentMatchday, setCurrentMatchday] = useState<number>(0);
     const [seasonId, setSeasonId] = useState<number | null>(null);
     const [teams, setTeams] = useState<Team[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -128,26 +130,43 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
       }
     }, []);
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (matchdayValue: number | null) => {
       try {
         setError(null);
-        setFetching({type: FetchingAction.setIsFetching, payload: true})
-        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?status=SCHEDULED`, {
+        setFetching({type: FetchingAction.setIsFetching, payload: true});
+
+        let matchdayToDisplay = matchdayValue;
+
+        if(!matchdayValue){
+          const scheduledMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches?status=SCHEDULED`, {
+            headers: {
+              'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
+            },
+            mode: 'cors'
+          });
+          const scheduledMatchesData: FixturesData = await scheduledMatchesResponse.json();
+          setMatchdayNumber(scheduledMatchesData.matches[0]?.matchday ?? 0);
+          setCurrentMatchday(scheduledMatchesData.matches[0]?.matchday ?? 0);
+          matchdayToDisplay = scheduledMatchesData.matches[0]?.matchday ?? 0;
+        }
+
+        const currentMatchesResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/matches`, {
             headers: {
               'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
             },
             mode: 'cors'
         });
         let currentMatchesData: FixturesData = await currentMatchesResponse.json();
-        currentMatchesData = {...currentMatchesData, matches: currentMatchesData.matches.filter(m => m.matchday === currentMatchesData.matches[0].matchday)}
-        setMatchdayNumber(currentMatchesData.matches[0].matchday ?? 0);
-          if (currentMatchesData.matches) {
+        currentMatchesData = {...currentMatchesData, matches: currentMatchesData.matches.filter(m => m.matchday === (matchdayToDisplay ?? matchdayNumber))};
+        if(matchdayToDisplay) {
+          setMatchdayNumber(matchdayToDisplay);
+        }
+          if (currentMatchesData.matches.length) {
             const fixtures = currentMatchesData.matches.map((fixture)  => ({...fixture, prediction: {homeTeamScore: null, awayTeamScore: null}, isSubmited: false, isResolved: false, isBoosted: false}))
-
             if(userState?.user?.id) {
               const userGameweekPredictionsResponse = await axios.post('/userGameweek', {
                 UserId: userState?.user?.id,
-                gameweek: currentMatchesData.matches[0].matchday,
+                gameweek: matchdayToDisplay ?? currentMatchesData.matches[0].matchday,
                 seasonId: currentMatchesData.matches[0].season.id
             });
             
@@ -170,17 +189,44 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                     points: prediction.points,
                     GameweekPredictionId: prediction.GameweekPredictionId,
                   }
+                } else if (fixture.status !== "SCHEDULED" && fixture.status !== "POSTPONED") {
+                  return {...fixture, 
+                    prediction: {
+                      homeTeamScore: null, 
+                      awayTeamScore: null
+                    },
+                    isSubmited: true,
+                    isResolved: true,
+                    isBoosted: false,
+                  }
                 } else {
                   return fixture
                 }
               })
                 currentFixturesDispatch({type: Actions.setFixtures, payload: fixturesToDispatch});
               } else {
-                currentFixturesDispatch({type: Actions.setFixtures, payload: fixtures});
+                const fixturesToDispatch: Fixture[] = fixtures.map((fixture) => {
+                  if (fixture.status !== "SCHEDULED" && fixture.status !== "POSTPONED") {
+                    return {...fixture, 
+                      prediction: {
+                        homeTeamScore: null, 
+                        awayTeamScore: null
+                      },
+                      isSubmited: true,
+                      isResolved: true,
+                      isBoosted: false,
+                    }
+                  } else {
+                    return fixture
+                  }
+                })
+                currentFixturesDispatch({type: Actions.setFixtures, payload: fixturesToDispatch});
               }
             }
-           
-            setSeasonId(fixtures[0].season.id);
+            
+            if(!seasonId) {
+              setSeasonId(fixtures[0].season.id);
+            }
   
             if (teams.length < 1) {
               const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
@@ -199,11 +245,11 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
         setError("Error. Try again in a minute...");
       }
       setFetching({type: FetchAction.setIsFetching, payload: false});
-    },[userState, currentFixturesDispatch])
-  
+    },[userState, currentFixturesDispatch]);
+
     useEffect(() => {
       if (userState?.user) {
-        fetchData()
+        fetchData(matchdayNumber)
       }
 
     }, [userState?.user, fetchData])
@@ -215,7 +261,13 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                 :
                 <TeamsContext.Provider value={teamsProvider}>
                 <Box className={classes.mainContent}>
-                  <Fixtures setIsModalOpen={setIsModalOpen} matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+                  <Fixtures 
+                    setIsModalOpen={setIsModalOpen}
+                    matchdayNumber={matchdayNumber}
+                    seasonId={seasonId}
+                    fetchData={fetchData}
+                    currentMatchday={currentMatchday}
+                  />
                   <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
                 </Box>
                 <Box className={classes.rulesContainer}>
