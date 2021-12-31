@@ -14,6 +14,20 @@ export default makeStyles(({ palette, breakpoints }) => ({
     rowSubmitted: {
         backgroundColor: palette.secondary.light,
     },
+    rowPostponed: {
+        backgroundColor: "#bbbbbb",
+        opacity: 0.9,
+        position: "relative",
+
+        "&::after": {
+            content: "Postponed",
+            color: palette.text.secondary,
+            position: 'absolute',
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)"
+        }
+    },
     rowExactScore: {
         backgroundColor: "#39a350"
     },

@@ -25,6 +25,8 @@ const Match: React.FC<Props> = ({ fixture }) => {
         awayTeam: {...fixture.awayTeam, crestUrl: teams.find(t => t.id === fixture.awayTeam.id)?.crestUrl}
     }
 
+    console.log(fixture);
+
     const handleBoostScoreClick = () => {
         const isBoostUsedAlready = !!fixtures?.fixtures?.find(fixture => (fixture.isBoosted && fixture.isSubmited));
         if(!isBoostUsedAlready && !fixture.isSubmited) {
@@ -40,7 +42,7 @@ const Match: React.FC<Props> = ({ fixture }) => {
     }
 
     return (
-        <Box className={fixture.isSubmited ? classNames(classes.rowSubmitted, classes.row) :classes.row}>
+        <Box className={fixture.isSubmited ? classNames(classes.rowSubmitted, classes.row) : fixture.status === "POSTPONED" ? classNames(classes.rowPostponed, classes.row) : classes.row}>
             <Button 
                 className={fixture.isBoosted? classNames(classes.bonusButtonPressed, classes.bonusButton) : classes.bonusButton} 
                 onClick={handleBoostScoreClick} 
