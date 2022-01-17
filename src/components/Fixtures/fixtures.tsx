@@ -32,7 +32,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, currentMatchday, matchdayNum
     const matchdayValues = useMemo(() => {
         let values: number[] = []
         if(currentMatchday > 0){
-            for(let i = 1; i<= currentMatchday + 1; i++){
+            for(let i = 1; i<= 38; i++){
                 values = [...values, i];
             }
         }
