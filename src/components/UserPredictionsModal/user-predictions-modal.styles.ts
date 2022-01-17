@@ -67,6 +67,12 @@ export default makeStyles(({ palette, breakpoints }) => ({
         borderBottom: `1px solid #e0e0e0`,
         boxSizing: "border-box",
 
+        "&:hover": {
+            "& $deletePredictionButton": {
+                display: "block"
+            }
+        },
+
         [breakpoints.down("md")]: {
             padding: "2px"
         },
@@ -160,4 +166,19 @@ export default makeStyles(({ palette, breakpoints }) => ({
         backgroundColor: palette.secondary.dark,
         color: "#fff"
     },
+    deletePredictionButton: {
+        display: "none",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        backgroundColor: palette.secondary.light,
+        textTransform: 'capitalize',
+        fontWeight: 'bold',
+        padding: "5px 25px",
+
+        "&:hover": {
+            backgroundColor: palette.secondary.main,
+        }
+    }
 }))

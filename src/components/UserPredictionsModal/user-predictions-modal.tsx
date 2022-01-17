@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
-import { Dialog, Typography, Box } from '@material-ui/core'
+import { Dialog, Typography, Box, Button } from '@material-ui/core'
 import React, { useContext, useEffect, useState } from 'react'
 import { axios } from '../../axios/axios';
 import { Actions as FetchAction, setIsFetchingContext } from '../../context/fetchingContext';
-import { User } from '../../context/userContext';
+import { User, UserContext } from '../../context/userContext';
 import useStyles from './user-predictions-modal.styles';
 import { Gameweek } from '../Standings/standings';
 import { TeamsContext } from '../../context/teamsContext';
 import classNames from 'classnames';
+import { UserPrediction } from '../AppContent/app-content';
 
 type Props = {
     isOpen: boolean;
@@ -24,6 +25,7 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
 
     const classes = useStyles();
     const teams = useContext(TeamsContext);
+    const user = useContext(UserContext);
     const [userPredictions, setUserPredictions] = useState<GameweekWithPoints[]>([]);
     const setFetching = useContext(setIsFetchingContext);
         
@@ -50,6 +52,13 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
             console.log(error)
         }
         setFetching({type: FetchAction.setIsFetching, payload: false});
+    }
+
+    const deletePrediction = async (prediction: UserPrediction) => {
+        const deletePredictionResponse = await axios.delete('/prediction', {data: {id: prediction.id }})
+        if(deletePredictionResponse.status === 200){
+            getUserPredictions();
+        }
     }
 
     useEffect(() => {
@@ -79,6 +88,10 @@ const UserPredictionsModal: React.FC<Props> = ({ isOpen, setIsOpen, player, matc
                                 <div>
                                     {gameweek.matchPredictions.map((prediction) => (
                                         <div className={prediction.isBoosted ? classNames(classes.rowBoosted, classes.row) : classes.row} key={prediction.id}>
+                                            
+                                            {user?.user?.role === "Admin" &&
+                                                <Button variant="contained" className={classes.deletePredictionButton} onClick={() => deletePrediction(prediction)}>Delete</Button>
+                                            } 
                                             <img className={classes.crest} src={teams.find(team => team.name === prediction.homeTeamName)?.crestUrl} alt={prediction.homeTeamName}></img>
                                             <div className={classes.teamName}>
                                                 <Typography className={classes.name} variant="body2">{prediction.homeTeamName.substring(0, prediction.homeTeamName.length-3)}</Typography>
