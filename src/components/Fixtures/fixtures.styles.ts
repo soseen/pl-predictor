@@ -125,5 +125,23 @@ export default makeStyles(({ palette, breakpoints }) => ({
     },
     customSelectMenu: {
         backgroundColor: palette.secondary.main
-    }
+    },
+    error: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "auto",
+        minWidth: "100%",
+        padding: "20px",
+        backgroundColor: palette.secondary.dark,
+        borderRadius: "2px",
+        boxShadow: "2px 2px 15px 5px #00000060",
+        marginBlockStart: 0,
+        marginBlockEnd: 0,
+        textAlign: "center",
+        minHeight: 100,
+        [breakpoints.up("sm")]: {
+            minWidth: 340,
+        },
+    },
 }));

@@ -106,9 +106,18 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, currentMatchday, matchdayNum
         return fixture ?? "";
     },[currentFixtures.fixtures])
 
+    if (!userState?.user) return (
+        <div className={classes.container}>
+            <div className={classes.messageContainer}>
+                <Typography variant='body1'>Log in to place your predictions...</Typography>
+                <Button variant="contained" onClick={() => setIsModalOpen({isOpen: true, target: "log-in"})} className={classes.button}>Log In</Button>
+            </div>
+        </div>
+    )
+
     return (
         <div className={classes.container}>
-            {userState?.user ? 
+            {(currentFixtures.fixtures?.length || 0) > 0 ? 
             <div className={classes.table}>
                 <Typography className={classes.tableName} variant='body1'>Gameweek {matchdayNumber}</Typography>
                 <div className={classes.titleContainer}>
@@ -161,8 +170,7 @@ const Fixtures: React.FC<Props> = ({setIsModalOpen, currentMatchday, matchdayNum
             </div>
             :
             <div className={classes.messageContainer}>
-                <Typography variant='body1'>Log in to place your predictions...</Typography>
-                <Button variant="contained" onClick={() => setIsModalOpen({isOpen: true, target: "log-in"})} className={classes.button}>Log In</Button>
+                <Typography variant='body1' className={classes.error}>No games to display</Typography>
             </div>
             }
             

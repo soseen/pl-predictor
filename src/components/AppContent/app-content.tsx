@@ -226,20 +226,19 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
             
             if(!seasonId) {
               setSeasonId(fixtures[0].season.id);
-            }
-  
-            if (teams.length < 1) {
-              const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
-                headers: {
-                  'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
-                },
-                mode: 'cors'
-              });
-              const teamsData: TeamsData = await teamsResponse.json()
-              const { teams } = teamsData;
-              setTeams(teams);
             }     
           }
+        if (teams.length < 1) {
+          const teamsResponse = await fetch(`https://api.football-data.org/v2/competitions/2021/teams`, {
+            headers: {
+              'X-Auth-Token': 'd4a9110b90c6415bb3d252836a4bf034'
+            },
+            mode: 'cors'
+          });
+          const teamsData: TeamsData = await teamsResponse.json()
+          const { teams } = teamsData;
+          setTeams(teams);
+        }
       } catch (error) {
         console.log(error)
         setError("Error. Try again in a minute...");
@@ -260,16 +259,16 @@ const AppContent: React.FC<Props> = ({setIsModalOpen}) => {
                 <Typography variant="h5" className={classes.error}>{error}</Typography>
                 :
                 <TeamsContext.Provider value={teamsProvider}>
-                <Box className={classes.mainContent}>
-                  <Fixtures 
-                    setIsModalOpen={setIsModalOpen}
-                    matchdayNumber={matchdayNumber}
-                    seasonId={seasonId}
-                    fetchData={fetchData}
-                    currentMatchday={currentMatchday}
-                  />
-                  <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
-                </Box>
+                  <Box className={classes.mainContent}>
+                    <Fixtures 
+                      setIsModalOpen={setIsModalOpen}
+                      matchdayNumber={matchdayNumber}
+                      seasonId={seasonId}
+                      fetchData={fetchData}
+                      currentMatchday={currentMatchday}
+                    />
+                    <Standings matchdayNumber={matchdayNumber} seasonId={seasonId}/>
+                  </Box>
                 <Box className={classes.rulesContainer}>
                   <Typography className={classes.rulesTitle} variant="h6">Zasady</Typography>
                     <ul className={classes.rulesList}>
